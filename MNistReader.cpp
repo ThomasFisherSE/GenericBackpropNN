@@ -6,12 +6,12 @@
 
 using namespace std;
 
-MNistReader::DataReader()
+MNistReader::MNistReader()
 {
 
 }
 
-MNistReader::~DataReader()
+MNistReader::~MNistReader()
 {
 
 }

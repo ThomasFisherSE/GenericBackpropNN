@@ -4,7 +4,7 @@
 #include <string.h>
 #include <math.h>
 
-Network::Network() :m_hiddenLayers(0), m_hiddenLayerCount(0)
+Network::Network()
 {
 
 }
@@ -24,6 +24,7 @@ Network::~Network()
 
 void Network::create(int inputCount, int inputNeurons, int outputCount, int *hiddenLayers, int hiddenLayerCount)
 {
+	/*
 	assert(inputCount && inputNeurons && outputCount);
 
 	int i;
@@ -55,8 +56,10 @@ void Network::create(int inputCount, int inputNeurons, int outputCount, int *hid
 	{
 		m_outputLayer.create(inputNeurons, outputCount);
 	}
+	*/
 }
 
+/*
 void Network::feedforward(const float *input)
 {
 	//Copy input array to layerInput array
@@ -77,7 +80,9 @@ void Network::feedforward(const float *input)
 
 	m_outputLayer.calculate();
 }
+*/
 
+/*
 float Network::backpropagate(const float *desiredOutput, const float *input, float alpha, float momentum)
 {
 	float generalError = 0;
@@ -155,3 +160,4 @@ float Network::backpropagate(const float *desiredOutput, const float *input, flo
 
 	return generalError / 2;
 }
+*/

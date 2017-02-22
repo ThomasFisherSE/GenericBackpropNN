@@ -3,13 +3,14 @@
 #include <assert.h>
 
 
-Layer::Layer() :neurons(0), neuronCount(0), inputCount(0)
+Layer::Layer()
 {
 }
 
 
 Layer::~Layer()
 {
+	/*
 	if (neurons)
 	{
 		for (int i = 0; i < neuronCount; i++)
@@ -22,8 +23,10 @@ Layer::~Layer()
 	{
 		delete[] layerInput;
 	}
+	*/
 }
 
+/*
 void Layer::create(int inputSize, int numberOfNeurons)
 {
 	assert(inputSize && numberOfNeurons);
@@ -41,9 +44,12 @@ void Layer::create(int inputSize, int numberOfNeurons)
 	neuronCount = numberOfNeurons;
 	inputCount = inputSize;
 }
+*/
 
+/*
 void Layer::calculate()
 {
+	/*
 	int i, j;
 	float sum;
 
@@ -60,3 +66,4 @@ void Layer::calculate()
 		neurons[i]->output = 1.f / (1.f + exp(-sum));
 	}
 }
+*/

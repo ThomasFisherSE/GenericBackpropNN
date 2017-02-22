@@ -1,0 +1,8 @@
+﻿  Network.cpp
+  MNistReader.cpp
+  Layer.cpp
+  Generating Code...
+MSVCRTD.lib(exe_main.obj) : error LNK2019: unresolved external symbol _main referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
+C:\armadillo-7.800.0\mathlib\blas_win64_MT.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'X86'
+C:\armadillo-7.800.0\mathlib\lapack_win64_MT.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'X86'
+C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\Debug\BackpropNetwork.exe : fatal error LNK1120: 1 unresolved externals
