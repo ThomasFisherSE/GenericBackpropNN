@@ -1,4 +1,4 @@
-#include "Layer.h"
+﻿#include "Layer.h"
 #include <math.h>
 #include <assert.h>
 
@@ -10,20 +10,42 @@ Layer::Layer()
 
 Layer::~Layer()
 {
-	/*
-	if (neurons)
-	{
-		for (int i = 0; i < neuronCount; i++)
-		{
-			delete neurons[i];
-		}
-		delete[] neurons;
+
+}
+
+vector<double>& Layer::propagateWeigths(vector<double> input)
+{
+
+}
+
+vector<double>& Layer::backPropagate(vector<double> input)
+{
+	
+	/* 1: Initialize all weights (w_ij)^l at random */
+	m_weights.randn();
+
+	/* 2 : for t = 0, 1, 2, . . . do */
+	for (int i = 0; i < 10000; i++) {
+		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
+		int n = rand();
+
+		/* 4 :	Forward : Compute all (x_j)^l */
+		// (x_j)^l = θ(sum of{(w_ij)^l)((x_i)^(l-1))})
+
+		/* 5 :	Backward : Compute all (δ_j)^l */
+		// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
+
+		// (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
+
+
+		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
+
+
+		/* 7:	Iterate to the next step until it is time to stop */
 	}
-	if (layerInput)
-	{
-		delete[] layerInput;
-	}
-	*/
+
+	/* 8 : Return the final weights (w_ij)^l */
+	
 }
 
 /*

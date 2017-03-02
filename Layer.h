@@ -12,7 +12,9 @@ public:
 
 	vector<double> &propagateWeigths(vector<double> input);
 	vector<double> &backPropagate(vector<double> input);
-	Layer(int m,int n);
+	int size() { return m_outputSize; }
+	double getWeight(int x, int y) { return m_weights(x, y); }
+	Layer(int inputSize, int outputSize);
 	Layer();
 	~Layer();
 
