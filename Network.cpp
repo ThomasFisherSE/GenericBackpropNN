@@ -1,4 +1,4 @@
-#include "Network.h"
+﻿#include "Network.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,32 +24,47 @@ Network::~Network()
 	*/
 }
 
-void Network::createUniform(int depth, int inputSize, int nbOfFeatures)
-{
-	create(inputSize, inputSize, nbOfFeatures, &depth, depth);
-}
-
 void Network::learn(vector<vector<double>> data) {
-	Layer &outputLayer = m_layers.back();
-	
-	m_error = 0.0;
+	int numberCorrect = 0;
 
-	for (unsigned n = 0; n < outputLayer.size() - 1; n++) {
-		double delta = m_targetValues[n] - outputLayer.getWeight(1,n);
-		m_error += delta * delta;
+	/* 1: Initialize all weights (w_ij)^l at random */
+	for (int i = 0; i < m_layers.size; i++) {
+		m_layers.at(i).initialiseLayer();
 	}
 
-	m_error /= outputLayer.size() - 1; // Find average error squared
+	/* 2 : for t = 0, 1, 2, . . . do */
+	while (m_recognitionRate < TARGET_RECOGNITION) {
+		for (int l = 0; l < m_layers.size; l++) {
+			/* 3 : Pick n ∈{ 1, 2, · · · , N } */
+			int n = rand();
 
-	m_error = sqrt(m_error); // Root mean squared error
+			/* 4 :	Forward : Compute all (x_j)^l */
+			m_layers.at(l).propagateWeigths(data);
+		}
 
-	// Calculate output layer gradients
+		/* 5 :	Backward : Compute all (δ_j)^l */
+		for (int l = m_layers.size; l >= 0; l++) {
+			// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
+			m_layers.at(l).backPropagate(data);
 
-	for (unsigned n = 0; n < outputLayer.size() - 1; n++) {
-		
+
+		}
+
+		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
+		for (int l = 0; l < m_layers.size; l++) {
+			m_layers.at(l).updateWeights();
+		}
+
+
+		// Print recognition rate every few iterations
+		m_recognitionRate = (numberCorrect / 60000) * 100;
+		cout << "Recognition Rate: " << m_recognitionRate << endl;
+
+		/* 7:	Iterate to the next step until it is time to stop */
 	}
 
-}
+	/* 8 : Return the final weights (w_ij)^l */
+
 
 /*
 float Layer::learn(const float *desiredOutput, const float *input, float alpha, float momentum)
@@ -130,6 +145,8 @@ m_inputLayer.neurons[i]->weightGain += alpha * localError * m_inputLayer.neurons
 return generalError / 2;
 }
 */
+}
+
 
 void Network::createUniform(int depth, int inputSize, int nbOfFeatures)
 {
@@ -149,7 +166,7 @@ void Network::createUniform(int depth, int inputSize, int nbOfFeatures)
 	}
 
 	//Output Layer
-	m_layers[depth + 1] = Layer(nbOfFeatures, 0);
+	m_layers[depth + 1] = Layer(inputSize, nbOfFeatures);
 }
 
 /*

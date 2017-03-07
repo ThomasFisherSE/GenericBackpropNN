@@ -13,38 +13,36 @@ Layer::~Layer()
 
 }
 
-vector<double>& Layer::propagateWeigths(vector<double> input)
+void Layer::initialiseLayer()
 {
-
+	m_weights.randn();
 }
 
-vector<double>& Layer::backPropagate(vector<double> input)
+void Layer::updateWeights()
 {
-	
-	/* 1: Initialize all weights (w_ij)^l at random */
-	m_weights.randn();
-
-	/* 2 : for t = 0, 1, 2, . . . do */
-	for (int i = 0; i < 10000; i++) {
-		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
-		int n = rand();
-
-		/* 4 :	Forward : Compute all (x_j)^l */
-		// (x_j)^l = θ(sum of{(w_ij)^l)((x_i)^(l-1))})
-
-		/* 5 :	Backward : Compute all (δ_j)^l */
-		// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
-
-		// (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
-
-
-		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
-
-
-		/* 7:	Iterate to the next step until it is time to stop */
+	for (int col = 0; col < m_weights.cols; col++) {
+		for (int row = 0; row < m_weights.rows; row++) {
+			// New weight = old weight - (eta * x from previous layer * delta for current layer)
+			m_weights.at(col, row) -= m_eta * m_prevX * m_delta;
+		}
 	}
+}
 
-	/* 8 : Return the final weights (w_ij)^l */
+
+
+vector<double>& Layer::propagateWeigths(vector<vector<double>> input)
+{
+	// (x_j)^l = θ(sum of{(w_ij)^l)((x_i)^(l-1))})
+	//Next x = ThresholdOf(Sum of(Current weight * x from the previous layer))
+
+	
+}
+
+vector<double>& Layer::backPropagate(vector<vector<double>> input)
+{
+	// (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
+	// Delta for previous layer = (1 - (x from previous layer squared * (sum of (weights from current layer * next delta))))
+	
 	
 }
 

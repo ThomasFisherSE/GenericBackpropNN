@@ -1,9 +1,8 @@
 ﻿  Layer.cpp
-  MNistReader.cpp
   Network.cpp
-  Main.cpp
-  Generating code
-  All 186 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Release\BackpropNetwork.exe
-  BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Release\BackpropNetwork.pdb (Full PDB)
+Layer.cpp(31): warning C4101: 'δ': unreferenced local variable
+Network.cpp(29): error C3861: 'create': identifier not found
+Network.cpp(37): warning C4018: '<': signed/unsigned mismatch
+Network.cpp(48): warning C4018: '<': signed/unsigned mismatch
+Network.cpp(135): error C2084: function 'void Network::createUniform(int,int,int)' already has a body
+  Network.cpp(27): note: see previous definition of 'createUniform'
