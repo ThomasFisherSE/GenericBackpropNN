@@ -10,12 +10,13 @@ class Layer
 public:
 	void initialiseLayer(); //Init weights to random numbers
 
-	double sigmoid(double x);
+	double sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
 	vector<double> &propagateWeigths(vector<vector<double>> input);
-	vector<double> &backPropagate(vector<vector<double>> input);
+	vector<double> &backPropagate(vector<vector<double>> input, double prevDelta);
 	void updateWeights();
 	int size() { return m_outputSize; }
 	double getWeight(int x, int y) { return m_weights(x, y); }
+	double getDelta() { return m_delta; }
 	Layer(int inputSize, int outputSize);
 	Layer();
 	~Layer();

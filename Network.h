@@ -16,7 +16,7 @@ private:
 	int m_hiddenLayerCount;
 	*/
 public:
-	const double TARGET_RECOGNITION = 50;
+	const double TARGET_RECOGNITION = 50; // Target percentage recognition rate
 
 	Network();
 	~Network();
