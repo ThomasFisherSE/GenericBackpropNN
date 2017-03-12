@@ -6,7 +6,12 @@
 
 Network::Network()
 {
+	
+}
 
+Network::Network(int depth, int inputSize, int nbOfFeatures)
+{
+	createUniform(depth, inputSize, nbOfFeatures);
 }
 
 Network::~Network()
@@ -34,19 +39,25 @@ void Network::learn(vector<vector<double>> data) {
 
 	/* 2 : for t = 0, 1, 2, . . . do */
 	while (m_recognitionRate < TARGET_RECOGNITION) {
-		for (int l = 0; l < m_layers.size; l++) {
-			/* 3 : Pick n ∈{ 1, 2, · · · , N } */
-			int n = rand();
+		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
+		// i.e. pick a random sample
+		int n = rand() % data.size; // Generate a random number between 0 and the size of the data
 
+		vector<double> sample = data.at(n); // Select the sample at this random index
+
+		// Initialise input layer
+		m_layers.at(0).setX(sample);
+
+		for (int l = 0; l < m_layers.size-1; l++) {
 			/* 4 :	Forward : Compute all (x_j)^l */
-			m_layers.at(l).propagateWeigths(data);
+			m_layers.at(l+1).setX(m_layers.at(l).propagateWeigths(sample));
 		}
 
 		/* 5 :	Backward : Compute all (δ_j)^l */
 		// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
 	
-		for (int l = m_layers.size-1; l >= 0; l++) {
-			m_layers.at(l).backPropagate(data, m_layers.at(l+1).getDelta());
+		for (int l = m_layers.size; l > 0; l++) {
+			m_layers.at(l).backPropagate(sample, m_layers.at(l-1));
 		}
 
 		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
@@ -54,9 +65,8 @@ void Network::learn(vector<vector<double>> data) {
 			m_layers.at(l).updateWeights();
 		}
 
-
 		// Print recognition rate every few iterations
-		m_recognitionRate = (numberCorrect / 60000) * 100;
+		m_recognitionRate = (numberCorrect / data.size) * 100;
 		cout << "Recognition Rate: " << m_recognitionRate << endl;
 
 		/* 7:	Iterate to the next step until it is time to stop */

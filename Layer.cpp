@@ -36,34 +36,43 @@ void Layer::updateWeights()
 
 
 
-vector<double>& Layer::propagateWeigths(vector<vector<double>> input)
+vector<double>& Layer::propagateWeigths(vector<double> input)
 {
 	// (x_j)^l = θ(sum of{(w_ij)^l)((x_i)^(l-1))})
 	//Next x = ThresholdOf(Sum of(Current weight * x from the previous layer))
 
 	int i, j;
-	double sum = 0;
-
-	for (i = 0; i < m_outputSize; i++)
+	vector<double> output;
+	for (i = 0; i < m_weights.rows; i++)
 	{
-		for (j = 0; j < m_inputSize; j++)
+		double sum = 0;
+		for (j = 0; j < m_weights.cols; j++)
 		{
-			sum += m_weights(i,j) * m_weights(j);
+			sum += m_weights(i, j) * input + 1;
 		}
-
-		sum = sigmoid(sum);
+		
+		output.at(i) = sigmoid(sum);
 		
 	}
+	return output;
 
 	
 }
 
-vector<double>& Layer::backPropagate(vector<vector<double>> input, double prevDelta)
+vector<double>& Layer::backPropagate(vector<double> input, Layer prevLayer)
 {
 	// (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
-	// Delta for previous layer = (1 - (x from previous layer squared * (sum of (weights from current layer * next delta))))
+	// Delta for prev layer = (1 - (x from prev layer squared * (sum of (weights from current layer * current delta))))
 	
-	
+	double sum;
+
+	for (int i = 0; i < m_weights.rows; i++) {
+		for (int j = 0; j < m_weights.cols; j++) {
+			sum += (m_weights.at(i, j) * m_delta);
+		}
+	}
+
+	prevLayer.setDelta(1 - (prevLayer.getX() * sum));
 }
 
 /*

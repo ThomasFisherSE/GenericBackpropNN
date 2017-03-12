@@ -19,6 +19,7 @@ public:
 	const double TARGET_RECOGNITION = 50; // Target percentage recognition rate
 
 	Network();
+	Network(int depth, int inputSize, int nbOfFeatures);
 	~Network();
 	void createUniform(int depth, int inputSize, int nbOfFeatures);
 
