@@ -1,8 +1,16 @@
 ﻿  Layer.cpp
-  Network.cpp
-Layer.cpp(31): warning C4101: 'δ': unreferenced local variable
-Network.cpp(29): error C3861: 'create': identifier not found
-Network.cpp(37): warning C4018: '<': signed/unsigned mismatch
-Network.cpp(48): warning C4018: '<': signed/unsigned mismatch
-Network.cpp(135): error C2084: function 'void Network::createUniform(int,int,int)' already has a body
-  Network.cpp(27): note: see previous definition of 'createUniform'
+Layer.cpp(33): warning C4018: '<': signed/unsigned mismatch
+Layer.cpp(34): warning C4018: '<': signed/unsigned mismatch
+Layer.cpp(54): warning C4018: '<': signed/unsigned mismatch
+Layer.cpp(57): warning C4018: '<': signed/unsigned mismatch
+Layer.cpp(78): warning C4018: '<': signed/unsigned mismatch
+Layer.cpp(81): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(64): warning C4172: returning address of local variable or temporary: output
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(88): warning C4172: returning address of local variable or temporary: output
+  22 of 604 functions ( 3.6%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    12 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Release\BackpropNetwork.exe
+  BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Release\BackpropNetwork.pdb (Full PDB)

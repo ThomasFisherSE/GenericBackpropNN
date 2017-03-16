@@ -9,12 +9,7 @@ private:
 	vector<vector<double>> m_targetValues;
 	double m_recognitionRate;
 
-	/*
-	Layer m_inputLayer;
-	Layer m_outputLayer;
-	Layer **m_hiddenLayers;
-	int m_hiddenLayerCount;
-	*/
+	bool m_testing = true;
 public:
 	const double TARGET_RECOGNITION = 50; // Target percentage recognition rate
 
@@ -23,6 +18,6 @@ public:
 	~Network();
 	void createUniform(int depth, int inputSize, int nbOfFeatures);
 
-	void learn(vector<vector<double>> data);
+	void train(vector<vector<double>> data);
 };
 

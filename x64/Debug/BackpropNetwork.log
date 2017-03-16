@@ -1,2 +1,12 @@
-﻿  BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.exe
+﻿  Layer.cpp
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(34): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(35): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(55): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(58): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(79): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(82): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(89): warning C4172: returning address of local variable or temporary: output
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(65): warning C4172: returning address of local variable or temporary: output
+cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
+  BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.exe
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.pdb (Full PDB)
