@@ -21,17 +21,54 @@ Network::~Network()
 {
 }
 
+void Network::initialiseWeights()
+{
+	if (m_testing) { cout << "Initializing weights at random..." << endl; }
+	
+	for (int i = 0; i < m_layers.size(); i++) {
+		m_layers[i].initialiseLayer();
+	}
+}
+
+void Network::forwardPass(vector<double> sample)
+{
+	if (m_testing) { cout << "Forward propagating..." << endl; }
+
+	for (int l = 0; l < m_layers.size() - 1; l++) {
+		m_layers[l + 1].setX(m_layers[l].propagateWeigths(sample));
+	}
+}
+
+void Network::backwardPass(vector<double> sample, double expected)
+{
+	if (m_testing) { cout << "Backpropagating..." << endl; }
+	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
+	m_layers[m_layers.size() - 1].setFinalLayer(expected, m_layers[m_layers.size() - 2]);
+
+	// For previous layers: (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
+	for (int l = m_layers.size() - 1; l > 0; l--) {
+		if (m_testing) { cout << "for layer: " << l << endl; }
+		m_layers[l].backPropagate(sample, m_layers[l - 1]);
+	}
+}
+
+void Network::updateWeights() {
+	if (m_testing) { cout << "Updating weights..." << endl; }
+
+	for (int l = 1; l < m_layers.size(); l++) {
+		m_layers[l].updateWeights(m_layers[l - 1]);
+	}
+}
+
 void Network::train(vector<vector<double>> data, vector<double> labels) {
 	int numberCorrect = 0;
 	int count = 0;
 
-	if (m_testing) { cout << "Initializing weights at random..." << endl; }
 	/* 1: Initialize all weights (w_ij)^l at random */
-	for (int i = 0; i < m_layers.size(); i++) {
-		m_layers[i].initialiseLayer();
-	}
+	initialiseWeights();
 
 	cout << "Target recognition rate: " << TARGET_RECOGNITION << endl;
+
 	/* 2 : for t = 0, 1, 2, . . . do */
 	while (m_recognitionRate < TARGET_RECOGNITION) {
 		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
@@ -39,41 +76,32 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		int n = rand() % data.size(); // Generate a random number between 0 and the size of the data
 
 		vector<double> sample = data[n]; // Select the sample at this random index
+		double expected = labels[n];
+		
+		if (m_testing) { cout << "Expected output is " << expected << endl; }
 
 		// Initialise input layer
 		m_layers[0].setX(sample);
-
-		if (m_testing) { cout << "Forward propagating..." << endl; }
 		
 		/* 4 :	Forward : Compute all (x_j)^l */
-		for (int l = 0; l < m_layers.size()-1; l++) {	
-			m_layers[l+1].setX(m_layers[l].propagateWeigths(sample));
-		}
-
-		if (m_testing) { cout << "Backpropagating..." << endl; }
+		forwardPass(sample);
 
 		/* 5 :	Backward : Compute all (δ_j)^l */
-		// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
-		m_layers[m_layers.size()-1].setFinalLayer(labels[n], m_layers[m_layers.size() - 2]);
-
-		// For previous layers: (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
-		for (int l = m_layers.size() - 1; l > 0; l--) {
-			if (m_testing) { cout << "for layer: " << l << endl; }
-			m_layers[l].backPropagate(sample, m_layers[l-1]);
-		}
-
-		if (m_testing) { cout << "Updating weights..." << endl; }
+		backwardPass(sample, expected);
 
 		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
-		for (int l = 1; l < m_layers.size(); l++) {
-			m_layers[l].updateWeights(m_layers[l-1]);
-		}
+		updateWeights();
+
+		// Check actual output compared to expected output
+		double actual = m_layers[m_layers.size() - 1].getX(1);
+
+		if (m_testing) { cout << "Expected: " << expected << "| Actual: " << actual << endl; }
+
+		if (actual == expected) { numberCorrect++; }
 
 		// Print recognition rate every few iterations
-		m_recognitionRate = (numberCorrect / data.size()) * 100;
-		
-		// Print recognition rate every x samples
 		if (count % PRINT_RATE == 0) {
+			m_recognitionRate = (numberCorrect / data.size()) * 100;
 			cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
 		}
 
@@ -81,9 +109,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		/* 7:	Iterate to the next step until it is time to stop */
 	}
-
 	/* 8 : Return the final weights (w_ij)^l */
-
 }
 
 

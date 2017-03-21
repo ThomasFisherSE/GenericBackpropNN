@@ -8,8 +8,12 @@ private:
 	double m_error;
 	vector<vector<double>> m_targetValues;
 	double m_recognitionRate;
-
 	bool m_testing = false;
+
+	void initialiseWeights();
+	void forwardPass(vector<double> sample);
+	void backwardPass(vector<double> sample, double expected);
+	void updateWeights();
 public:
 	const double TARGET_RECOGNITION = 50; // Target percentage recognition rate
 	const int PRINT_RATE = 100; // Print recognition rate every x samples
