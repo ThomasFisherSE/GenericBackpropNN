@@ -26,16 +26,43 @@ int MNistReader::reverseInt(int i)
 	return((int)ch1 << 24) + ((int)ch2 << 16) + ((int)ch3 << 8) + ch4;
 }
 
-void MNistReader::readMnist(int numberOfSamples, int dataOfAnImage, vector<vector<double>> &array)
+// Copied
+void MNistReader::readLabels(int numberOfSamples, vector<double> &vec, string filename)
+{
+	vec.resize(numberOfSamples);
+
+	ifstream file(filename, ios::binary);
+
+	if (file.is_open())
+	{
+		int magic_number = 0;
+		int number_of_images = 0;
+		int n_rows = 0;
+		int n_cols = 0;
+		file.read((char*)&magic_number, sizeof(magic_number));
+		magic_number = reverseInt(magic_number);
+		file.read((char*)&number_of_images, sizeof(number_of_images));
+		number_of_images = reverseInt(number_of_images);
+
+		for (int i = 0; i < number_of_images; ++i)
+		{
+			unsigned char temp = 0;
+			file.read((char*)&temp, sizeof(temp));
+			vec[i] = (double)temp;
+		}
+	}
+}
+
+void MNistReader::readImages(int numberOfSamples, int dataOfAnImage, vector<vector<double>> &vec, string filepath)
 {
 	//Counter to keep track of successful writes to array
 	int successCount = 0;
 
 	//Resize array so that it contains numberOfSamples elements
-	array.resize(numberOfSamples, vector<double>(dataOfAnImage));
+	vec.resize(numberOfSamples, vector<double>(dataOfAnImage));
 
 	//Choose and open file to read from
-	ifstream file("t10k-images.idx3-ubyte", ios::binary);
+	ifstream file(filepath, ios::binary);
 
 	if (file.is_open())
 	{
@@ -60,8 +87,9 @@ void MNistReader::readMnist(int numberOfSamples, int dataOfAnImage, vector<vecto
 		{
 			file.read((char*)temp, dataOfAnImage);
 			for (int j = 0; j<dataOfAnImage; j++)
-				array[i][j] = (double)temp[j];
+				vec[i][j] = (double)temp[j];
 			successCount += dataOfAnImage;
+			cout << (int) (successCount/TOTAL_PIXELS/(double)numberOfSamples*100.0) << "%\r";
 		}
 		delete[] temp;
 		cout << "Successfully stored " << successCount << " values into array." << endl;

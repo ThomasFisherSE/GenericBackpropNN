@@ -21,10 +21,11 @@ Network::~Network()
 {
 }
 
-void Network::train(vector<vector<double>> data) {
+void Network::train(vector<vector<double>> data, vector<double> labels) {
 	int numberCorrect = 0;
+	int count = 0;
 
-	cout << "Initializing weights at random..." << endl;
+	if (m_testing) { cout << "Initializing weights at random..." << endl; }
 	/* 1: Initialize all weights (w_ij)^l at random */
 	for (int i = 0; i < m_layers.size(); i++) {
 		m_layers[i].initialiseLayer();
@@ -53,6 +54,7 @@ void Network::train(vector<vector<double>> data) {
 
 		/* 5 :	Backward : Compute all (δ_j)^l */
 		// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
+		m_layers[m_layers.size()-1].setFinalLayer(labels[n], m_layers[m_layers.size() - 2]);
 
 		// For previous layers: (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
 		for (int l = m_layers.size() - 1; l > 0; l--) {
@@ -63,13 +65,19 @@ void Network::train(vector<vector<double>> data) {
 		if (m_testing) { cout << "Updating weights..." << endl; }
 
 		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
-		for (int l = 0; l < m_layers.size(); l++) {
+		for (int l = 1; l < m_layers.size(); l++) {
 			m_layers[l].updateWeights(m_layers[l-1]);
 		}
 
 		// Print recognition rate every few iterations
 		m_recognitionRate = (numberCorrect / data.size()) * 100;
-		cout << "Recognition Rate: " << m_recognitionRate << endl;
+		
+		// Print recognition rate every x samples
+		if (count % PRINT_RATE == 0) {
+			cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
+		}
+
+		count++;
 
 		/* 7:	Iterate to the next step until it is time to stop */
 	}
@@ -83,19 +91,10 @@ void Network::createUniform(int depth, int inputSize, int nbOfFeatures)
 {
 	m_layers.resize(depth); // e.g. for depth of 3, size = 2, m_layers = [L,L,L]
 
-	if (depth == 0) {
-		//Case of 2 layer network, no hidden layers
-		//Input Layer
-		m_layers[0] = Layer(inputSize, nbOfFeatures);
-	}
-	else 
-	{
-		//Case of hidden layer network
-		//From input layer to final hidden layer
-		for (int i = 0; i < depth; i++) {
-			//Create hidden layers with input and output of the same size (For MNIST, 28*28 in,28*28 out)
-			m_layers[i] = Layer(inputSize, inputSize);
-		}
+	//From input layer to final hidden layer
+	for (int i = 0; i < depth; i++) {
+		//Create hidden layers with input and output of the same size (For MNIST, 28*28 in,28*28 out)
+		m_layers[i] = Layer(inputSize, inputSize);
 	}
 
 	//Output Layer
