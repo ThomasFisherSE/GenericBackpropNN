@@ -102,10 +102,11 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		// Print recognition rate every few iterations
 		if (count % PRINT_RATE == 0) {
 			m_recognitionRate = (numberCorrect / data.size()) * 100;
-			cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
+			//cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
 		}
 
 		count++;
+		cout << "Number of trained samples: " << count << '\r';
 
 		/* 7:	Iterate to the next step until it is time to stop */
 	}

@@ -32,10 +32,10 @@ void Layer::initialiseLayer()
 void Layer::updateWeights(Layer prevLayer)
 {
 	for (int col = 0; col < m_weights.n_cols; col++) {
-		for (int row = 1; row < m_weights.n_rows; row++) {
+		for (int row = 0; row < m_outputSize; row++) {
 			// (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l
 			// New weight = old weight - (eta * x from previous layer * delta for current layer)
-			m_weights[col, row] -= m_eta * prevLayer.getX(col) * m_delta[row-1];
+			m_weights[col, row] -= m_eta * prevLayer.getX(col) * m_delta[row];
 		}
 	}
 }
