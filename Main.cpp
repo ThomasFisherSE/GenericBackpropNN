@@ -17,14 +17,22 @@ int main(int argc, char *argv[])
 	cout << "Reading training data..." << endl;
 	dataReader.readImages(MNistReader::TRAINING_SIZE, MNistReader::TOTAL_PIXELS, trainingImages, dataReader.TRAINING_IMAGES);
 
+	cout << DIVIDER << endl;
+
 	cout << "Reading training labels..." << endl;
 	dataReader.readLabels(MNistReader::TRAINING_SIZE, trainingLabels, dataReader.TRAINING_IMAGES);
+
+	cout << DIVIDER << endl;
 
 	cout << "Reading test data..." << endl;
 	dataReader.readImages(MNistReader::TESTING_SIZE, MNistReader::TOTAL_PIXELS, testingImages, dataReader.TEST_IMAGES);
 
+	cout << DIVIDER << endl;
+
 	cout << "Reading test labels..." << endl;
 	dataReader.readLabels(MNistReader::TESTING_SIZE, testLabels, dataReader.TEST_LABELS);
+
+	cout << DIVIDER << endl;
 
 	cout << "Creating network..." << endl;
 	Network net(3, MNistReader::TOTAL_PIXELS, 1);

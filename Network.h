@@ -16,7 +16,7 @@ private:
 	void updateWeights();
 public:
 	const double TARGET_RECOGNITION = 50; // Target percentage recognition rate
-	const int PRINT_RATE = 100; // Print recognition rate every x samples
+	const int PRINT_RATE = 1; // Print recognition rate every PRINT_RATE samples
 
 	Network();
 	Network(int depth, int inputSize, int nbOfFeatures);

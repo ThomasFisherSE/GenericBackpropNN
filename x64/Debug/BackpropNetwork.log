@@ -1,8 +1,12 @@
 ﻿  Network.cpp
 c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\network.cpp(49): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\network.cpp(104): warning C4244: '=': conversion from 'unsigned __int64' to 'double', possible loss of data
+  Layer.cpp
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(34): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(52): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(55): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(84): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(87): warning C4018: '<': signed/unsigned mismatch
   Generating Code...
-  Skipping... (no relevant changes detected)
-  Main.cpp
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.exe
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.pdb (Full PDB)
