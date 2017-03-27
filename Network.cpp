@@ -97,7 +97,9 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		if (m_testing) { cout << "Expected: " << expected << "| Actual: " << actual << endl; }
 
-		if (actual == expected) { numberCorrect++; }
+		if (actual == expected) { 
+			numberCorrect++;
+		}
 
 		count++;
 

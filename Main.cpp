@@ -22,6 +22,12 @@ int main(int argc, char *argv[])
 	cout << "Reading training labels..." << endl;
 	dataReader.readLabels(MNistReader::TRAINING_SIZE, trainingLabels, dataReader.TRAINING_LABELS);
 
+	for (int i = 0; i < trainingLabels.size(); i++) {
+		if (trainingLabels[i] != 0) {
+			trainingLabels[i] = 1;
+		}
+	}
+
 	cout << DIVIDER << endl;
 
 	cout << "Reading test data..." << endl;
