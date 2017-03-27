@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	cout << DIVIDER << endl;
 
 	cout << "Reading training labels..." << endl;
-	dataReader.readLabels(MNistReader::TRAINING_SIZE, trainingLabels, dataReader.TRAINING_IMAGES);
+	dataReader.readLabels(MNistReader::TRAINING_SIZE, trainingLabels, dataReader.TRAINING_LABELS);
 
 	cout << DIVIDER << endl;
 
