@@ -15,7 +15,7 @@ private:
 	void backwardPass(vector<double> sample, double expected);
 	void updateWeights();
 public:
-	const double TARGET_RECOGNITION = 50; // Target percentage recognition rate
+	const double TARGET_RECOGNITION = 10; // Target percentage recognition rate
 	const int PRINT_RATE = 1; // Print recognition rate every PRINT_RATE samples
 
 	Network();
@@ -24,5 +24,7 @@ public:
 	void createUniform(int depth, int inputSize, int nbOfFeatures);
 
 	void train(vector<vector<double>> data, vector<double> labels);
+
+	void test(vector<vector<double>> data, vector<double> labels);
 };
 

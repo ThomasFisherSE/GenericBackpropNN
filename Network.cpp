@@ -60,6 +60,30 @@ void Network::updateWeights() {
 	}
 }
 
+void Network::test(vector<vector<double>> data, vector<double> labels) {
+	int numberCorrect = 0;
+
+	cout << "Target recognition rate: " << TARGET_RECOGNITION << endl;
+
+	for (int i = 0; i < data.size(); i++) {
+		vector<double> sample = data[i]; // Select the sample at this random index
+		double expected = labels[i];
+
+		// Check actual output compared to expected output
+		forwardPass(data[i]);
+		double actual = m_layers[m_layers.size() - 1].getX(1);
+
+		if (m_testing) { cout << "Expected: " << expected << "| Actual: " << actual << endl; }
+
+		if (actual == expected) {
+			numberCorrect++;
+		}
+	}
+
+	m_recognitionRate = ((double)numberCorrect / data.size() * 100.0);
+	cout << "Recognition Rate: " << m_recognitionRate << endl;
+}
+
 void Network::train(vector<vector<double>> data, vector<double> labels) {
 	int numberCorrect = 0;
 	int count = 0;
@@ -105,7 +129,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		// Print recognition rate every few iterations
 		if (count % PRINT_RATE == 0) {
-			m_recognitionRate = (numberCorrect / data.size()) * 100;
+			m_recognitionRate = ((double) numberCorrect / data.size()) * 100.0;
 			//cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
 			int epoch = (int)(count / labels.size());
 			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recognition Rate: " << m_recognitionRate << '\r';
@@ -113,7 +137,8 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		/* 7:	Iterate to the next step until it is time to stop */
 	}
-	/* 8 : Return the final weights (w_ij)^l */
+	/* 8 : Return the final weights (w_ij)^l */#
+	cout << endl;
 }
 
 

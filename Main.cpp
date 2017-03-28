@@ -53,4 +53,12 @@ int main(int argc, char *argv[])
 	cout << DIVIDER << endl;
 	cout << "Training complete." << endl;
 	cout << DIVIDER << endl;
+
+	cout << "Testing Network:" << endl;
+	cout << DIVIDER << endl;
+
+	net.test(testingImages, testLabels);
+
+	string in;
+	cin >> in;
 }
