@@ -55,6 +55,11 @@ void MNistReader::readLabels(int numberOfSamples, vector<double> &vec, string fi
 	}
 }
 
+void ReadMNIST(int NumberOfImages, int DataOfAnImage, vector<vector<double>> &arr)
+{
+
+}
+
 void MNistReader::readImages(int numberOfSamples, int dataOfAnImage, vector<vector<double>> &vec, string filepath)
 {
 	//Counter to keep track of successful writes to array
@@ -65,35 +70,35 @@ void MNistReader::readImages(int numberOfSamples, int dataOfAnImage, vector<vect
 
 	//Choose and open file to read from
 	ifstream file(filepath, ios::binary);
-
 	if (file.is_open())
 	{
-		int magicNumber = 0;
-		int numberOfImages = 0;
-		int nRows = 0;
-		int nColumns = 0;
-
-		file.read((char*)&magicNumber, sizeof(magicNumber));
-		magicNumber = reverseInt(magicNumber);
-
-		file.read((char*)&numberOfImages, sizeof(numberOfImages));
-		numberOfImages = reverseInt(numberOfImages);
-
-		file.read((char*)&nRows, sizeof(nRows));
-		nRows = reverseInt(nRows);
-
-		file.read((char*)&nColumns, sizeof(nColumns));
-		nColumns = reverseInt(nColumns);
-		unsigned char *temp = new unsigned char[dataOfAnImage];
-		for (int i = 0; i<numberOfImages; ++i)
+		int magic_number = 0;
+		int number_of_images = 0;
+		int n_rows = 0;
+		int n_cols = 0;
+		file.read((char*)&magic_number, sizeof(magic_number));
+		magic_number = reverseInt(magic_number);
+		file.read((char*)&number_of_images, sizeof(number_of_images));
+		number_of_images = reverseInt(number_of_images);
+		file.read((char*)&n_rows, sizeof(n_rows));
+		n_rows = reverseInt(n_rows);
+		file.read((char*)&n_cols, sizeof(n_cols));
+		n_cols = reverseInt(n_cols);
+		for (int i = 0; i<number_of_images; ++i)
 		{
-			file.read((char*)temp, dataOfAnImage);
-			for (int j = 0; j<dataOfAnImage; j++)
-				vec[i][j] = (double)temp[j];
+			for (int r = 0; r<n_rows; ++r)
+			{
+				for (int c = 0; c<n_cols; ++c)
+				{
+					unsigned char temp = 0;
+					file.read((char*)&temp, sizeof(temp));
+					vec[i][(n_rows*r) + c] = (double)temp;
+				}
+			}
+
 			successCount += dataOfAnImage;
-			cout << (int) (successCount/TOTAL_PIXELS/(double)numberOfSamples*100.0) << "%\r";
+			cout << (int)(successCount / TOTAL_PIXELS / (double)numberOfSamples*100.0) << "%\r";
 		}
-		delete[] temp;
 		cout << "Successfully stored " << successCount << " values into array." << endl;
 		cout << "Loaded " << successCount / dataOfAnImage << " samples." << endl;
 	}

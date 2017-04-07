@@ -8,6 +8,8 @@ private:
 	double m_error;
 	vector<vector<double>> m_targetValues;
 	double m_recognitionRate;
+	int m_inputSize, m_outputSize, m_depth;
+
 	bool m_testing = false;
 
 	void initialiseWeights();

@@ -1,8 +1,17 @@
-﻿  Network.cpp
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\network.cpp(49): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\network.cpp(106): warning C4244: '=': conversion from 'unsigned __int64' to 'double', possible loss of data
-  Main.cpp
+﻿  Main.cpp
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.h(18): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Network.cpp
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.h(18): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\network.cpp(61): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   MNistReader.cpp
+  Layer.cpp
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.h(18): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(34): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(35): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(52): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(55): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(89): warning C4018: '<': signed/unsigned mismatch
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(92): warning C4018: '<': signed/unsigned mismatch
   Generating Code...
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.exe
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.pdb (Full PDB)
