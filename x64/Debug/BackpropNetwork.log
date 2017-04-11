@@ -1,7 +1,4 @@
-﻿  Layer.cpp
+﻿  Main.cpp
 c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.h(19): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(64): warning C4018: '<': signed/unsigned mismatch
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(140): warning C4018: '<': signed/unsigned mismatch
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.cpp(143): warning C4018: '<': signed/unsigned mismatch
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.exe
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.pdb (Full PDB)

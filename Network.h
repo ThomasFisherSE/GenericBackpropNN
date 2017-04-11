@@ -17,6 +17,7 @@ private:
 	void backwardPass(vector<double> sample, double expected);
 	void updateWeights();
 public:
+	const double TARGET_ERROR = 10;
 	const double TARGET_RECOGNITION = 10; // Target percentage recognition rate
 	const int PRINT_RATE = 1; // Print recognition rate every PRINT_RATE samples
 

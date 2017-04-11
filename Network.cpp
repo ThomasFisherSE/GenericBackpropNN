@@ -155,7 +155,8 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 	/* 2 : for t = 0, 1, 2, . . . do */
 	//while (m_recognitionRate < TARGET_RECOGNITION) {
-	while (count < 1000) {
+	while (m_layers.back().getError() > TARGET_ERROR) {
+
 		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
 		// i.e. pick a random sample
 		int n = rand() % data.size(); // Generate a random number between 0 and the size of the data
@@ -190,7 +191,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 			m_recognitionRate = ((double) numberCorrect / data.size()) * 100.0;
 			//cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
 			int epoch = (int)(count / labels.size());
-			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recognition Rate: " << m_recognitionRate << '\r';
+			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recent Average Error: " << m_layers.back().getError() << '\r';
 		}
 
 		/* 7:	Iterate to the next step until it is time to stop */

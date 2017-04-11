@@ -2,32 +2,40 @@
 #include "Network.h"
 #include <iostream>
 
-int main(int argc, char *argv[])
-{
-	const string DIVIDER = "*************************************************";
-	cout << DIVIDER << endl << "MNIST Character Recognition Neural Network" << endl << DIVIDER << endl;
+const string DIVIDER = "*************************************************";
 
-	vector<vector<double>> nandData(4);
-	
-	for (int i = 0; i < 4; i++) {
+void nandGates() {
+	vector<vector<double>> nandData(1000);
+	vector<double> nandLabels(1000);
+
+	for (int i = 0; i < 1000; i++) {
 		nandData[i].resize(2);
 	}
 
-	nandData[0][0] = 1;
-	nandData[0][1] = 1;
-	nandData[1][0] = 1;
-	nandData[1][1] = 0;
-	nandData[2][0] = 0;
-	nandData[2][1] = 1;
-	nandData[3][0] = 0;
-	nandData[3][1] = 0;
+	for (int j = 0; j < 200; j++) {
+		nandData[j][0] = 0;
+		nandData[j][1] = 0;
+		nandLabels[j] = 1;
 
-	vector<double> nandLabels(4);
+		int k = j + 200;
 
-	nandLabels[0] = 0;
-	nandLabels[1] = 1;
-	nandLabels[2] = 1;
-	nandLabels[3] = 1;
+		nandData[k][0] = 0;
+		nandData[k][1] = 1;
+		nandLabels[k] = 1;
+
+		int l = k + 200;
+
+		nandData[l][0] = 1;
+		nandData[l][1] = 0;
+		nandLabels[l] = 1;
+
+		int m = l + 200;
+
+		nandData[m][0] = 1;
+		nandData[m][1] = 1;
+		nandLabels[m] = 0;
+	}
+
 
 	vector<vector<double>> nandTestData(1000);
 	vector<double> nandTestLabels(1000);
@@ -64,8 +72,9 @@ int main(int argc, char *argv[])
 
 	net.train(nandData, nandLabels);
 	net.test(nandTestData, nandTestLabels);
+}
 
-	/*
+void characterRecognition() {
 	vector<vector<double>> testingImages;
 	vector<vector<double>> trainingImages;
 	vector<double> testLabels;
@@ -123,7 +132,14 @@ int main(int argc, char *argv[])
 	cout << DIVIDER << endl;
 
 	net.test(testingImages, testLabels);
-	*/
+}
+
+int main(int argc, char *argv[])
+{
+	cout << DIVIDER << endl << "MNIST Character Recognition Neural Network" << endl << DIVIDER << endl;
+
+	//nandGates();
+	characterRecognition();
 
 	string in;
 	cin >> in;

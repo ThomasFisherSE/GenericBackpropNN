@@ -20,6 +20,7 @@ public:
 	double getWeight(int x, int y) { return m_weights(x, y); }
 	double getDelta(int i) { return m_delta[i]; }
 	double getGradient(int i) { return m_gradients[i]; }
+	double getError() { return m_recentAverageError; }
 	void setDelta(int i, double delta) { m_delta[i] = delta; }
 	int getOutputSize() { return m_outputSize; }
 	double getOutput(int i) { return m_outputs[i]; }

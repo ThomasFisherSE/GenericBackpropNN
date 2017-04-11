@@ -7,6 +7,8 @@ using namespace std;
 
 Layer::Layer(int inputSize, int outputSize)
 {
+	m_error = 0;
+	m_recentAverageError = 99999;
 	m_inputSize = inputSize;
 	m_outputSize = outputSize;
 	m_outputs.resize(outputSize);
@@ -107,7 +109,7 @@ double Layer::sumDerivativeOfWeights(Layer &nextLayer) {
 	double sum = 0.0;
 
 	for (int i = 0; i < m_outputSize - 1; i++) {
-		for (int j = 0; j < m_outputSize - 1; j++) {
+		for (int j = 0; j < nextLayer.getOutputSize() - 1; j++) {
 			sum += m_weights.at(i, j) * nextLayer.getGradient(j);
 		}
 	}
