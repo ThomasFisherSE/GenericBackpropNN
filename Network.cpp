@@ -40,81 +40,99 @@ void Network::forwardPass(vector<double> sample)
 	// Initialise input layer
 	m_layers[0].initialiseInputs(sample);
 
-	// Propagate input to first hidden layer
-	vector<double> prevX = m_layers[1].propagateWeigths(sample);
+	for (int i = 1; i < m_layers.size(); i++) {
+		Layer &prevLayer = m_layers[i - 1];
 
-	// Propagate through all other layers
-	for (int l = 2; l < m_layers.size(); l++) {
-		prevX = m_layers[l].propagateWeigths(prevX);
+		m_layers[i].propagateWeigths(prevLayer.getOutputs());
 	}
 }
 
-void Network::backwardPass(vector<double> sample, double expected)
+void Network::backwardPass(vector<double> sample, double target)
 {
 	if (m_testing) { cout << "Backpropagating..." << endl; }
 
+	Layer &outputLayer = m_layers.back();
+	outputLayer.calcFinalDelta(target);
+
+	outputLayer.calcOutputGradients(target);
+
+	for (int l = m_layers.size() - 2; l > 0; l--) {
+		Layer &hiddenLayer = m_layers[l];
+		Layer &nextLayer = m_layers[l + 1];
+
+		hiddenLayer.calcHiddenGradients(nextLayer);
+	}
+
+	/*
 	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
 	Layer finalLayer = m_layers[m_layers.size() - 1];
-	finalLayer.calcFinalDelta(expected, m_layers[m_layers.size() - 2]);
+	finalLayer.calcFinalDelta(target, m_layers[m_layers.size() - 2]);
 
 	// For previous layers: (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
 	for (int l = m_layers.size() - 2; l >= 0; l--) {
 		if (m_testing) { cout << "for layer: " << l << endl; }
 		m_layers[l].backPropagate(sample, m_layers[l]);
 	}
+	*/
 }
 
 void Network::updateWeights() {
 	if (m_testing) { cout << "Updating weights..." << endl; }
 
-	for (int l = 1; l < m_layers.size(); l++) {
-		m_layers[l].updateWeights(m_layers[l - 1]);
+	for (int l = m_layers.size() - 1; l > 0; l--) {
+		Layer &prevLayer = m_layers[l - 1];
+		m_layers[l].updateWeights(prevLayer);
 	}
 }
 
 void Network::test(vector<vector<double>> data, vector<double> labels) {
 	int numberCorrect = 0;
+	int numberIncorrect = 0;
 
 	//cout << "Target recognition rate: " << TARGET_RECOGNITION << endl;
 
 	for (int i = 0; i < data.size(); i++) {
 		vector<double> sample = data[i]; // Select the sample at this random index
-		double expected = labels[i];
+		double target = labels[i];
 		double actual = -1;
 
 		// Check actual output compared to expected output
 		forwardPass(data[i]);
 
-		Layer finalLayer = m_layers[m_layers.size()-1];
+		Layer finalLayer = m_layers.back();
 
-		actual = finalLayer.getX(0);
+		actual = finalLayer.getOutput(0);
 
-		//ACTUAL ALWAYS 0
-
-		
-		/*
-		NOTE: NEED TO ADD FUNCTIONALITY FOR MULTIPLE OUTPUT NEURONS,
-		BUT TRYING WITH 1 OUTPUT FOR NOW
-
-		for (int i = 0; i < m_outputSize; i++) {
-			double x = m_layers[m_layers.size() - 1].getX(i);
-
-			if (x==1) {
-				actual = i;
-			}
-		}*/
-
-		if (actual >= 0) {
+		if (actual >= 0.5) {
 			actual = 1;
 		}
 		else {
 			actual = 0;
 		}
 
-		if (true) { cout << "\nExpected: " << expected << " | Actual: " << actual << endl; }
+		/*
+		NOTE: NEED TO ADD FUNCTIONALITY FOR MULTIPLE OUTPUT NEURONS,
+		BUT TRYING WITH 1 OUTPUT FOR NOW
 
-		if (actual == expected) {
+		int activatedOutput;
+
+		for (int i = 0; i < m_outputSize; i++) {
+			double x = m_layers[m_layers.size() - 1].getX(i);
+
+			if (x >= 0.5) {
+				activatedOutput = i;
+			}
+		}
+
+		*/
+
+		if (true) { cout << "\nTarget: " << target << " | Actual: " << actual << endl; }
+
+		if (actual == target) {
 			numberCorrect++;
+		}
+		else {
+			numberIncorrect++;
 		}
 
 		cout << "Testing sample: " << i+1 << " / " << data.size() << '\r';
@@ -143,25 +161,25 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		int n = rand() % data.size(); // Generate a random number between 0 and the size of the data
 
 		vector<double> sample = data[n]; // Select the sample at this random index
-		double expected = labels[n];
+		double target = labels[n];
 		
-		if (m_testing) { cout << "Expected output is " << expected << endl; }
+		if (m_testing) { cout << "Expected output is " << target << endl; }
 		
 		/* 4 :	Forward : Compute all (x_j)^l */
 		forwardPass(sample);
 
 		/* 5 :	Backward : Compute all (δ_j)^l */
-		backwardPass(sample, expected);
+		backwardPass(sample, target);
 
 		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
 		updateWeights();
 
 		// Check actual output compared to expected output
-		double actual = m_layers[m_layers.size() - 1].getX(0);
+		double actual = m_layers[m_layers.size() - 1].getOutput(0);
 
-		if (m_testing) { cout << "Expected: " << expected << "| Actual: " << actual << endl; }
+		if (m_testing) { cout << "Expected: " << target << "| Actual: " << actual << endl; }
 
-		if (actual == expected) { 
+		if (actual == target) { 
 			numberCorrect++;
 		}
 
