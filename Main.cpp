@@ -138,8 +138,8 @@ int main(int argc, char *argv[])
 {
 	cout << DIVIDER << endl << "MNIST Character Recognition Neural Network" << endl << DIVIDER << endl;
 
-	//nandGates();
-	characterRecognition();
+	nandGates();
+	//characterRecognition();
 
 	string in;
 	cin >> in;

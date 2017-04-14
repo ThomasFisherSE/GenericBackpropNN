@@ -1,4 +1,3 @@
-﻿  Main.cpp
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\layer.h(19): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+﻿  Layer.cpp
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.exe
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.pdb (Full PDB)

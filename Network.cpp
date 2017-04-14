@@ -12,10 +12,10 @@ Network::Network()
 	
 }
 
-Network::Network(int depth, int inputSize, int nbOfFeatures)
+Network::Network(unsigned depth, unsigned inputSize, unsigned nbOfFeatures)
 {
 	m_error = 0;
-	m_recentAverageError = 100;
+	m_recentAverageError = 0;
 
 	m_depth = depth;
 	m_inputSize = inputSize;
@@ -31,7 +31,7 @@ void Network::initialiseWeights()
 {
 	if (m_testing) { cout << "Initializing weights at random..." << endl; }
 	
-	for (int i = 0; i < m_layers.size(); i++) {
+	for (unsigned i = 0; i < m_layers.size(); i++) {
 		m_layers[i].initialiseWeights();
 	}
 }
@@ -43,10 +43,10 @@ void Network::forwardPass(vector<double> sample)
 	// Initialise input layer
 	m_layers[0].initialiseInputs(sample);
 
-	for (int i = 1; i < m_layers.size(); i++) {
-		Layer &prevLayer = m_layers[i - 1];
+	for (unsigned l = 1; l < m_layers.size(); l++) {
+		Layer &prevLayer = m_layers[l - 1];
 
-		m_layers[i].propagateWeigths(prevLayer.getOutputs());
+		m_layers[l].forwardPropagate(prevLayer);
 	}
 }
 
@@ -64,7 +64,7 @@ void Network::backwardPass(vector<double> sample, double target)
 
 	outputLayer.calcOutputGradients(target);
 
-	for (int l = m_layers.size() - 2; l > 0; l--) {
+	for (size_t l = m_layers.size() - 2; l > 0; l--) {
 		Layer &hiddenLayer = m_layers[l];
 		Layer &nextLayer = m_layers[l + 1];
 
@@ -77,7 +77,7 @@ void Network::backwardPass(vector<double> sample, double target)
 	finalLayer.calcFinalDelta(target, m_layers[m_layers.size() - 2]);
 
 	// For previous layers: (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
-	for (int l = m_layers.size() - 2; l >= 0; l--) {
+	for (unsigned l = m_layers.size() - 2; l >= 0; l--) {
 		if (m_testing) { cout << "for layer: " << l << endl; }
 		m_layers[l].backPropagate(sample, m_layers[l]);
 	}
@@ -87,56 +87,46 @@ void Network::backwardPass(vector<double> sample, double target)
 void Network::updateWeights() {
 	if (m_testing) { cout << "Updating weights..." << endl; }
 
-	for (int l = m_layers.size() - 1; l > 0; l--) {
+	for (size_t l = m_layers.size() - 1; l > 0; l--) {
 		Layer &prevLayer = m_layers[l - 1];
 		m_layers[l].updateWeights(prevLayer);
 	}
 }
 
+void Network::getResults(vector<double> &resultVals) {
+	resultVals.clear();
+
+	for (unsigned i = 0; i < m_layers.back().getOutputSize(); i++) {
+		resultVals.push_back(m_layers.back().getOutput(i));
+	}
+}
+
 void Network::test(vector<vector<double>> data, vector<double> labels) {
-	int numberCorrect = 0;
-	int numberIncorrect = 0;
+	unsigned numberCorrect = 0;
+	unsigned numberIncorrect = 0;
 
-	//cout << "Target recognition rate: " << TARGET_RECOGNITION << endl;
-
-	for (int i = 0; i < data.size(); i++) {
+	for (unsigned i = 0; i < data.size(); i++) {
 		vector<double> sample = data[i]; // Select the sample at this random index
 		double target = labels[i];
-		double actual = -1;
+		double output;
 
 		// Check actual output compared to expected output
 		forwardPass(data[i]);
 
-		Layer finalLayer = m_layers.back();
+		vector<double> results;
 
-		actual = finalLayer.getOutput(0);
+		getResults(results);
 
-		if (actual >= 0.5) {
-			actual = 1;
+		if (results[0] > 0.5) {
+			output = 1;
 		}
 		else {
-			actual = 0;
+			output = 0;
 		}
 
-		/*
-		NOTE: NEED TO ADD FUNCTIONALITY FOR MULTIPLE OUTPUT NEURONS,
-		BUT TRYING WITH 1 OUTPUT FOR NOW
+		if (true) { cout << "\nTarget: " << target << " | Output: " << output << endl; }
 
-		int activatedOutput;
-
-		for (int i = 0; i < m_outputSize; i++) {
-			double x = m_layers[m_layers.size() - 1].getX(i);
-
-			if (x >= 0.5) {
-				activatedOutput = i;
-			}
-		}
-
-		*/
-
-		if (true) { cout << "\nTarget: " << target << " | Actual: " << actual << endl; }
-
-		if (actual == target) {
+		if (output == target) {
 			numberCorrect++;
 		}
 		else {
@@ -153,21 +143,19 @@ void Network::test(vector<vector<double>> data, vector<double> labels) {
 }
 
 void Network::train(vector<vector<double>> data, vector<double> labels) {
-	int numberCorrect = 0;
-	int count = 0;
+	unsigned numberCorrect = 0;
+	unsigned count = 0;
 
 	/* 1: Initialize all weights (w_ij)^l at random */
 	initialiseWeights();
 
-	cout << "Target recognition rate: " << TARGET_RECOGNITION << endl;
-
 	/* 2 : for t = 0, 1, 2, . . . do */
 	//while (m_recognitionRate < TARGET_RECOGNITION) {
-	while (m_recentAverageError > TARGET_ERROR) {
-
+	//while (m_recentAverageError > TARGET_ERROR) {
+	while (count < 10000) {
 		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
 		// i.e. pick a random sample
-		int n = rand() % data.size(); // Generate a random number between 0 and the size of the data
+		unsigned n = rand() % data.size(); // Generate a random number between 0 and the size of the data
 
 		vector<double> sample = data[n]; // Select the sample at this random index
 		double target = labels[n];
@@ -183,22 +171,13 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
 		updateWeights();
 
-		// Check actual output compared to expected output
-		double actual = m_layers[m_layers.size() - 1].getOutput(0);
-
-		if (m_testing) { cout << "Expected: " << target << "| Actual: " << actual << endl; }
-
-		if (actual == target) { 
-			numberCorrect++;
-		}
-
 		count++;
 
-		// Print recognition rate every few iterations
+		// Print pass details
 		if (count % PRINT_RATE == 0) {
-			m_recognitionRate = ((double) numberCorrect / data.size()) * 100.0;
+			//m_recognitionRate = ((double) numberCorrect / data.size()) * 100.0;
 			//cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
-			int epoch = (int)(count / labels.size());
+			unsigned epoch = (unsigned)(count / labels.size());
 			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recent Average Error: " << m_recentAverageError << '\r';
 		}
 
@@ -208,12 +187,12 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 	cout << endl;
 }
 
-void Network::createUniform(int depth, int inputSize, int nbOfFeatures)
+void Network::createUniform(unsigned depth, unsigned inputSize, unsigned nbOfFeatures)
 {
 	//m_layers.resize(depth); // e.g. for depth of 3, size = 2, m_layers = [L,L,L]
 
 	//From input layer to final hidden layer
-	for (int i = 0; i < depth-1; i++) {
+	for (unsigned l = 0; l < depth-1; l++) {
 		//Create hidden layers with input and output of the same size (For MNIST, 28*28 in,28*28 out)
 		m_layers.push_back(Layer(inputSize, inputSize));
 	}

@@ -55,11 +55,6 @@ void MNistReader::readLabels(int numberOfSamples, vector<double> &vec, string fi
 	}
 }
 
-void ReadMNIST(int NumberOfImages, int DataOfAnImage, vector<vector<double>> &arr)
-{
-
-}
-
 void MNistReader::readImages(int numberOfSamples, int dataOfAnImage, vector<vector<double>> &vec, string filepath)
 {
 	//Counter to keep track of successful writes to array

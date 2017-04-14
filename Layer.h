@@ -10,26 +10,26 @@ class Layer
 public:
 	void initialiseWeights(); //Init weights to random numbers
 	double sigmoid(double x) { return tanh(x); }
-	double sigmoidDerivative(double x) { return 1.0 - x * x; }
+	double sigmoidDerivative(double x) { return 1.0 - x * x; } // tanh derivative
 	double altSigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
-	vector<double> propagateWeigths(vector<double> prevXvals);
+	vector<double> forwardPropagate(Layer &prevLayer);
 	vector<double> backPropagate(vector<double> input, Layer &prevLayer);
 	double calcFinalDelta(double expected);
 	void updateWeights(Layer prevLayer);
-	int size() { return m_outputs.size(); }
-	double getWeight(int x, int y) { return m_weights(x, y); }
-	double getDelta(int i) { return m_delta[i]; }
-	double getGradient(int i) { return m_gradients[i]; }
-	void setDelta(int i, double delta) { m_delta[i] = delta; }
-	int getOutputSize() { return m_outputSize; }
-	double getOutput(int i) { return m_outputs[i]; }
+	size_t size() { return m_outputs.size(); }
+	double getWeight(unsigned x, unsigned y) { return m_weights(x, y); }
+	double getDelta(unsigned i) { return m_delta[i]; }
+	double getGradient(unsigned i) { return m_gradients[i]; }
+	void setDelta(unsigned i, double delta) { m_delta[i] = delta; }
+	unsigned getOutputSize() { return m_outputSize; }
+	double getOutput(unsigned i) { return m_outputs[i]; }
 	vector<double> getOutputs() { return m_outputs; }
 	void initialiseInputs(vector<double> sample) { m_outputs = sample; }
 
 	void calcOutputGradients(double target);
 	void calcHiddenGradients(Layer &nextLayer);
 	double sumDerivativeOfWeights(Layer &nextLayer);
-	Layer(int inputSize, int outputSize);
+	Layer(unsigned inputSize, unsigned outputSize);
 	Layer();
 	~Layer();
 
@@ -41,7 +41,7 @@ private:
 	vector<double> m_delta;
 	
 	vector<double> m_gradients;
-	int m_inputSize, m_outputSize;
+	unsigned m_inputSize, m_outputSize;
 	mat m_weights;
 
 };

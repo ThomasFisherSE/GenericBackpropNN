@@ -25,15 +25,17 @@ public:
 	const int PRINT_RATE = 1; // Print recognition rate every PRINT_RATE samples
 
 	Network();
-	Network(int depth, int inputSize, int nbOfFeatures);
+	Network(unsigned depth, unsigned inputSize, unsigned nbOfFeatures);
 	~Network();
 
 	double getRecentAverageError() { return m_recentAverageError; }
 
-	void createUniform(int depth, int inputSize, int nbOfFeatures);
+	void createUniform(unsigned depth, unsigned inputSize, unsigned nbOfFeatures);
 
 	void train(vector<vector<double>> data, vector<double> labels);
 
 	void test(vector<vector<double>> data, vector<double> labels);
+
+	void getResults(vector<double> &resultVals);
 };
 

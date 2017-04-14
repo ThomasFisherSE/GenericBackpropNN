@@ -1,7 +1,5 @@
-﻿  Main.cpp
-  Network.cpp
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\Layer.h(19): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data (compiling source file Main.cpp)
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\Layer.h(19): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data (compiling source file Network.cpp)
+﻿  Network.cpp
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\Layer.h(19): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
 Network.cpp(67): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 Network.cpp(90): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   Generating code
