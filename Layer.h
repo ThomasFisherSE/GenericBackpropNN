@@ -14,13 +14,12 @@ public:
 	double altSigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
 	vector<double> propagateWeigths(vector<double> prevXvals);
 	vector<double> backPropagate(vector<double> input, Layer &prevLayer);
-	void calcFinalDelta(double expected);
+	double calcFinalDelta(double expected);
 	void updateWeights(Layer prevLayer);
 	int size() { return m_outputs.size(); }
 	double getWeight(int x, int y) { return m_weights(x, y); }
 	double getDelta(int i) { return m_delta[i]; }
 	double getGradient(int i) { return m_gradients[i]; }
-	double getError() { return m_recentAverageError; }
 	void setDelta(int i, double delta) { m_delta[i] = delta; }
 	int getOutputSize() { return m_outputSize; }
 	double getOutput(int i) { return m_outputs[i]; }
@@ -40,10 +39,8 @@ private:
 	vector<double> m_outputs; // Neuron values
 	vector<double> m_rawOutputs; // Before thresholding
 	vector<double> m_delta;
-	double m_error;
+	
 	vector<double> m_gradients;
-	double m_recentAverageError;
-	double m_recentAverageRate = 100; // Number of samples to average over
 	int m_inputSize, m_outputSize;
 	mat m_weights;
 

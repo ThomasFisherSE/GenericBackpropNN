@@ -14,6 +14,9 @@ Network::Network()
 
 Network::Network(int depth, int inputSize, int nbOfFeatures)
 {
+	m_error = 0;
+	m_recentAverageError = 100;
+
 	m_depth = depth;
 	m_inputSize = inputSize;
 	m_outputSize = nbOfFeatures;
@@ -52,7 +55,12 @@ void Network::backwardPass(vector<double> sample, double target)
 	if (m_testing) { cout << "Backpropagating..." << endl; }
 
 	Layer &outputLayer = m_layers.back();
-	outputLayer.calcFinalDelta(target);
+	m_error = outputLayer.calcFinalDelta(target);
+
+	m_error /= m_outputSize; // Average error squared
+	m_error = sqrt(m_error); // RMS
+
+	m_recentAverageError = (m_recentAverageError * m_recentAverageRate + m_error) / (m_recentAverageRate + 1.0);
 
 	outputLayer.calcOutputGradients(target);
 
@@ -155,7 +163,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 	/* 2 : for t = 0, 1, 2, . . . do */
 	//while (m_recognitionRate < TARGET_RECOGNITION) {
-	while (m_layers.back().getError() > TARGET_ERROR) {
+	while (m_recentAverageError > TARGET_ERROR) {
 
 		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
 		// i.e. pick a random sample
@@ -191,7 +199,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 			m_recognitionRate = ((double) numberCorrect / data.size()) * 100.0;
 			//cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
 			int epoch = (int)(count / labels.size());
-			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recent Average Error: " << m_layers.back().getError() << '\r';
+			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recent Average Error: " << m_recentAverageError << '\r';
 		}
 
 		/* 7:	Iterate to the next step until it is time to stop */

@@ -7,8 +7,6 @@ using namespace std;
 
 Layer::Layer(int inputSize, int outputSize)
 {
-	m_error = 0;
-	m_recentAverageError = 99999;
 	m_inputSize = inputSize;
 	m_outputSize = outputSize;
 	m_outputs.resize(outputSize);
@@ -81,22 +79,20 @@ vector<double> Layer::propagateWeigths(vector<double> prevXvals)
 	return m_outputs;
 }
 
-void Layer::calcFinalDelta(double target)
+double Layer::calcFinalDelta(double target)
 {
 	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
 	// delta = 2(1-tanh^2((s_1)^2))(x_1 - y_n)
 
+	double error = 0;
+
 	for (int i = 0; i < m_outputSize; i++) {
 		double delta = target - m_outputs[i];
 		m_delta[i] = delta;
-		m_error += delta * delta;
+		error += delta * delta;
 	}
 	
-	m_error /= m_outputSize; // Average error squared
-	m_error = sqrt(m_error); // RMS
-	
-	m_recentAverageError = (m_recentAverageError * m_recentAverageRate + m_error) / (m_recentAverageRate + 1.0);
-
+	return error;
 
 	/*
 	double tanhS = sigmoid(m_rawOutputs[0] * m_rawOutputs[0]);
