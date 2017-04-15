@@ -14,10 +14,11 @@ public:
 	double altSigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
 	vector<double> forwardPropagate(Layer &prevLayer);
 	vector<double> backPropagate(vector<double> input, Layer &prevLayer);
-	double calcFinalDelta(double expected);
-	void updateWeights(Layer prevLayer);
+	double calculateError(double expected);
+	void updateWeights(Layer &prevLayer);
 	size_t size() { return m_outputs.size(); }
-	double getWeight(unsigned x, unsigned y) { return m_weights(x, y); }
+	double getWeight(unsigned i, unsigned j) { return m_weights.at(i, j); }
+	void setWeight(unsigned i, unsigned j, double newWeight) { m_weights.at(i, j) = newWeight; }
 	double getDelta(unsigned i) { return m_delta[i]; }
 	double getGradient(unsigned i) { return m_gradients[i]; }
 	void setDelta(unsigned i, double delta) { m_delta[i] = delta; }

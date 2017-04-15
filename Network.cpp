@@ -38,7 +38,7 @@ void Network::initialiseWeights()
 
 void Network::forwardPass(vector<double> sample)
 {
-	if (m_testing) { cout << "Forward propagating..." << endl; }
+	if (m_testing) { cout << "Forward pass..." << endl; }
 
 	// Initialise input layer
 	m_layers[0].initialiseInputs(sample);
@@ -52,18 +52,17 @@ void Network::forwardPass(vector<double> sample)
 
 void Network::backwardPass(vector<double> sample, double target)
 {
-	if (m_testing) { cout << "Backpropagating..." << endl; }
+	if (m_testing) { cout << "Backwards Pass..." << endl; }
 
 	Layer &outputLayer = m_layers.back();
-	m_error = outputLayer.calcFinalDelta(target);
-
-	m_error /= m_outputSize; // Average error squared
-	m_error = sqrt(m_error); // RMS
+	m_error = outputLayer.calculateError(target);
 
 	m_recentAverageError = (m_recentAverageError * m_recentAverageRate + m_error) / (m_recentAverageRate + 1.0);
 
+	// Calculate output gradient(s)
 	outputLayer.calcOutputGradients(target);
 
+	// Calculate hidden layer gradients
 	for (size_t l = m_layers.size() - 2; l > 0; l--) {
 		Layer &hiddenLayer = m_layers[l];
 		Layer &nextLayer = m_layers[l + 1];

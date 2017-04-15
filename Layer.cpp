@@ -36,7 +36,7 @@ void Layer::initialiseWeights()
 	m_weights.randn(m_inputSize, m_outputSize);
 }
 
-void Layer::updateWeights(Layer prevLayer)
+void Layer::updateWeights(Layer &prevLayer)
 {
 	for (unsigned i = 0; i < prevLayer.getOutputSize(); i++) {
 		for (unsigned j = 0; j < m_outputSize; j++) {
@@ -45,6 +45,8 @@ void Layer::updateWeights(Layer prevLayer)
 			double oldWeight = prevLayer.getWeight(i, j);
 
 			double newWeight = oldWeight - ETA * prevLayer.getOutput(i) * m_gradients[j];
+
+			prevLayer.setWeight(i,j, newWeight);
 		}
 	}
 
@@ -60,16 +62,18 @@ void Layer::updateWeights(Layer prevLayer)
 }
 
 vector<double> Layer::forwardPropagate(Layer &prevLayer) {
-	// (x_j)^l = θ(sum of{(w_ij)^l)((x_i)^(l-1))})
+	// (x_j)^l = θ(sum of{(w_ij)^l * ((x_i)^(l-1))})
 	//Next x = ThresholdOf(Sum of(Current weight * x from the previous layer))
 
-	// For each neuron
+	// For each neuron in this layer
 	for (unsigned j = 0; j < m_outputSize; j++)
 	{
 		double sum = 0.0;
 
+		// For each neuron in the previous layer
 		for (unsigned i = 0; i < prevLayer.getOutputSize(); i++)
 		{
+			// Add the previous layer's output * the weight between (x_i)^(l-1) and (x_j)^l
 			sum += prevLayer.getOutput(i) * prevLayer.getWeight(i, j);
 		}
 
@@ -82,19 +86,22 @@ vector<double> Layer::forwardPropagate(Layer &prevLayer) {
 	return m_outputs;
 }
 
-double Layer::calcFinalDelta(double target)
+double Layer::calculateError(double target)
 {
 	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
 	// delta = 2(1-tanh^2((s_1)^2))(x_1 - y_n)
 
-	double error = 0;
+	double error = 0.0;
 
-	for (unsigned i = 0; i < m_outputSize; i++) {
-		double delta = target - m_outputs[i];
-		m_delta[i] = delta;
+	for (unsigned n = 0; n < m_outputSize; n++) {
+		double delta = target - m_outputs[n];
+		m_delta[n] = delta;
 		error += delta * delta;
 	}
 	
+	error /= m_outputSize; // Average error squared
+	error = sqrt(error); // RMS
+
 	return error;
 
 	/*
@@ -107,8 +114,12 @@ double Layer::calcFinalDelta(double target)
 double Layer::sumDerivativeOfWeights(Layer &nextLayer) {
 	double sum = 0.0;
 
-	for (unsigned i = 0; i < m_outputSize - 1; i++) {
-		for (unsigned j = 0; j < nextLayer.getOutputSize() - 1; j++) {
+	// For each neuron in the current layer
+	for (unsigned i = 0; i < m_outputSize; i++) {
+		// For each neuron in the next layer
+		for (unsigned j = 0; j < nextLayer.getOutputSize(); j++) {
+			// Add the weight w_ij in the current layer * the gradient of 
+			// x_j in the next layer to the sum
 			sum += m_weights.at(i, j) * nextLayer.getGradient(j);
 		}
 	}
@@ -118,15 +129,15 @@ double Layer::sumDerivativeOfWeights(Layer &nextLayer) {
 
 void Layer::calcHiddenGradients(Layer &nextLayer) {
 	double dow = sumDerivativeOfWeights(nextLayer);
-	for (unsigned i = 0; i < m_outputSize; i++) {
-		m_gradients[i] = dow * sigmoidDerivative(m_outputs[i]);
+	for (unsigned n = 0; n < m_outputSize; n++) {
+		m_gradients[n] = dow * sigmoidDerivative(m_outputs[n]);
 	}	
 }
 
 void Layer::calcOutputGradients(double target) {
-	for (unsigned i = 0; i < m_outputSize; i++) {
-		double delta = target - m_outputs[i];
-		m_gradients[i] = delta * sigmoidDerivative(m_outputs[i]);
+	for (unsigned n = 0; n < m_outputSize; n++) {
+		double delta = target - m_outputs[n];
+		m_gradients[n] = delta * sigmoidDerivative(m_outputs[n]);
 	}	
 }
 
