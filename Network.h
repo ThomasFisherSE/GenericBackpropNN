@@ -23,7 +23,7 @@ public:
 	const double TARGET_ERROR = 0.5;
 	const double TARGET_RECOGNITION = 10; // Target percentage recognition rate
 	const int PRINT_RATE = 100; // Print recognition rate every PRINT_RATE samples
-	const unsigned MAX_EPOCHS = 50;
+	const unsigned MAX_EPOCHS = 500;
 
 	Network();
 	Network(unsigned depth, unsigned inputSize, unsigned nbOfFeatures);

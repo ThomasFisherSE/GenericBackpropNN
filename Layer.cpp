@@ -141,7 +141,7 @@ void Layer::backPropagate(Layer &nextLayer) {
 
 	for (unsigned n = 0; n < m_outputSize; n++) {
 		m_gradients[n] = dow * sigmoidDerivative(m_outputs[n]);
-	}	
+	}
 }
 
 void Layer::calcFinalDelta(double target) {
