@@ -36,7 +36,7 @@ void Network::initialiseWeights()
 	}
 }
 
-void Network::forwardPass(vector<double> sample)
+void Network::feedForward(vector<double> sample)
 {
 	if (m_testing) { cout << "Forward pass..." << endl; }
 
@@ -46,11 +46,11 @@ void Network::forwardPass(vector<double> sample)
 	for (unsigned l = 1; l < m_layers.size(); l++) {
 		Layer &prevLayer = m_layers[l - 1];
 
-		m_layers[l].forwardPropagate(prevLayer);
+		m_layers[l].feedForward(prevLayer);
 	}
 }
 
-void Network::backwardPass(vector<double> sample, double target)
+void Network::backPropagate(double target)
 {
 	if (m_testing) { cout << "Backwards Pass..." << endl; }
 
@@ -60,14 +60,14 @@ void Network::backwardPass(vector<double> sample, double target)
 	m_recentAverageError = (m_recentAverageError * m_recentAverageRate + m_error) / (m_recentAverageRate + 1.0);
 
 	// Calculate output gradient(s)
-	outputLayer.calcOutputGradients(target);
+	outputLayer.calcFinalDelta(target);
 
 	// Calculate hidden layer gradients
 	for (size_t l = m_layers.size() - 2; l > 0; l--) {
 		Layer &hiddenLayer = m_layers[l];
 		Layer &nextLayer = m_layers[l + 1];
 
-		hiddenLayer.calcHiddenGradients(nextLayer);
+		hiddenLayer.backPropagate(nextLayer);
 	}
 
 	/*
@@ -110,26 +110,18 @@ void Network::test(vector<vector<double>> data, vector<double> labels) {
 		double output;
 
 		// Check actual output compared to expected output
-		forwardPass(data[i]);
+		feedForward(data[i]);
 
-		vector<double> results;
+		vector<double> results; // Vector of results
 
-		getResults(results);
+		getResults(results); // Put results in results vector
 
-		if (results[0] > 0.5) {
-			output = 1;
-		}
-		else {
-			output = 0;
-		}
+		output = hardThreshold(results[0]);
 
 		if (true) { cout << "\nTarget: " << target << " | Output: " << output << endl; }
 
 		if (output == target) {
 			numberCorrect++;
-		}
-		else {
-			numberIncorrect++;
 		}
 
 		cout << "Testing sample: " << i+1 << " / " << data.size() << '\r';
@@ -137,8 +129,8 @@ void Network::test(vector<vector<double>> data, vector<double> labels) {
 	
 	cout << endl;
 
-	m_recognitionRate = ((double)numberCorrect / data.size() * 100.0);
-	cout << "Recognition Rate: " << m_recognitionRate << endl;
+	m_accuracy = ((double)numberCorrect / data.size() * 100.0);
+	cout << "Accuracy: " << m_accuracy << endl;
 }
 
 void Network::train(vector<vector<double>> data, vector<double> labels) {
@@ -149,9 +141,10 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 	initialiseWeights();
 
 	/* 2 : for t = 0, 1, 2, . . . do */
+	unsigned epoch = 0;
 	//while (m_recognitionRate < TARGET_RECOGNITION) {
 	//while (m_recentAverageError > TARGET_ERROR) {
-	while (count < 10000) {
+	while (epoch < MAX_EPOCHS) {
 		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
 		// i.e. pick a random sample
 		unsigned n = rand() % data.size(); // Generate a random number between 0 and the size of the data
@@ -159,13 +152,11 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		vector<double> sample = data[n]; // Select the sample at this random index
 		double target = labels[n];
 		
-		if (m_testing) { cout << "Expected output is " << target << endl; }
-		
 		/* 4 :	Forward : Compute all (x_j)^l */
-		forwardPass(sample);
+		feedForward(sample);
 
 		/* 5 :	Backward : Compute all (δ_j)^l */
-		backwardPass(sample, target);
+		backPropagate(target);
 
 		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
 		updateWeights();
@@ -174,10 +165,14 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		// Print pass details
 		if (count % PRINT_RATE == 0) {
+			if (true) { 
+				double output = m_layers.back().getOutput(0);
+				cout << "Expected: " << labels[n] << " | Obtained: " << output << endl;
+			}
 			//m_recognitionRate = ((double) numberCorrect / data.size()) * 100.0;
 			//cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
-			unsigned epoch = (unsigned)(count / labels.size());
-			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recent Average Error: " << m_recentAverageError << '\r';
+			epoch = (unsigned)(count / labels.size());
+			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recent Average Error: " << m_recentAverageError << endl;
 		}
 
 		/* 7:	Iterate to the next step until it is time to stop */
@@ -198,4 +193,13 @@ void Network::createUniform(unsigned depth, unsigned inputSize, unsigned nbOfFea
 
 	//Output Layer
 	m_layers.push_back(Layer(inputSize, nbOfFeatures));
+}
+
+double Network::hardThreshold(double x) {
+	if (x >= 0.5) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }

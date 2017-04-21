@@ -11,13 +11,14 @@ Layer::Layer(unsigned inputSize, unsigned outputSize)
 	m_outputSize = outputSize;
 	m_outputs.resize(outputSize);
 	m_rawOutputs.resize(outputSize);
-	m_delta.resize(outputSize);
+	//m_delta.resize(outputSize);
 	m_gradients.resize(outputSize);
 
-	// Initialise outputs of each neuron to 0s
+	// Initialise outputs and gradients of each neuron to 0s
 	for (unsigned n = 0; n < outputSize; n++) {
 		m_outputs[n] = 0.0;
 		m_rawOutputs[n] = 0.0;
+		m_gradients[n] = 0.0;
 	}
 }
 
@@ -34,19 +35,26 @@ Layer::~Layer()
 void Layer::initialiseWeights()
 {
 	m_weights.randn(m_inputSize, m_outputSize);
+	m_weightChanges.zeros(m_inputSize, m_outputSize);
 }
 
 void Layer::updateWeights(Layer &prevLayer)
 {
-	for (unsigned i = 0; i < prevLayer.getOutputSize(); i++) {
-		for (unsigned j = 0; j < m_outputSize; j++) {
+	for (unsigned j = 0; j < m_outputSize; j++) {
+		for (unsigned i = 0; i < prevLayer.getOutputSize(); i++) {
 			// (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l
-			// New weight = old weight - (eta * x from previous layer * delta for current layer)
+			// New weight = old weight - (eta * x from previous layer * delta for current layer)		
 			double oldWeight = prevLayer.getWeight(i, j);
+			double oldWeightChange = prevLayer.getWeightChange(i, j);
 
-			double newWeight = oldWeight - ETA * prevLayer.getOutput(i) * m_gradients[j];
+			double newWeightChange = ETA * prevLayer.getOutput(i) * m_gradients[j] + ALPHA * oldWeightChange;
 
-			prevLayer.setWeight(i,j, newWeight);
+			//double newWeight = oldWeight - ETA * prevLayer.getOutput(i) * m_gradients[j];
+
+			double newWeight = oldWeight + newWeightChange;
+
+			prevLayer.setWeightChange(i, j, newWeightChange);
+			prevLayer.setWeight(i, j, newWeight);
 		}
 	}
 
@@ -61,7 +69,7 @@ void Layer::updateWeights(Layer &prevLayer)
 	*/
 }
 
-vector<double> Layer::forwardPropagate(Layer &prevLayer) {
+vector<double> Layer::feedForward(Layer &prevLayer) {
 	// (x_j)^l = θ(sum of{(w_ij)^l * ((x_i)^(l-1))})
 	//Next x = ThresholdOf(Sum of(Current weight * x from the previous layer))
 
@@ -89,13 +97,11 @@ vector<double> Layer::forwardPropagate(Layer &prevLayer) {
 double Layer::calculateError(double target)
 {
 	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
-	// delta = 2(1-tanh^2((s_1)^2))(x_1 - y_n)
-
 	double error = 0.0;
 
 	for (unsigned n = 0; n < m_outputSize; n++) {
 		double delta = target - m_outputs[n];
-		m_delta[n] = delta;
+		//m_delta[n] = delta;
 		error += delta * delta;
 	}
 	
@@ -105,6 +111,9 @@ double Layer::calculateError(double target)
 	return error;
 
 	/*
+	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
+	// delta = 2(1-tanh^2((s_1)^2))(x_1 - y_n)
+
 	double tanhS = sigmoid(m_rawOutputs[0] * m_rawOutputs[0]);
 
 	m_delta[0] = 2 * (1 - tanhS*tanhS) * (m_outputs[0] - target);
@@ -127,20 +136,22 @@ double Layer::sumDerivativeOfWeights(Layer &nextLayer) {
 	return sum;
 }
 
-void Layer::calcHiddenGradients(Layer &nextLayer) {
+void Layer::backPropagate(Layer &nextLayer) {
 	double dow = sumDerivativeOfWeights(nextLayer);
+
 	for (unsigned n = 0; n < m_outputSize; n++) {
 		m_gradients[n] = dow * sigmoidDerivative(m_outputs[n]);
 	}	
 }
 
-void Layer::calcOutputGradients(double target) {
+void Layer::calcFinalDelta(double target) {
 	for (unsigned n = 0; n < m_outputSize; n++) {
 		double delta = target - m_outputs[n];
 		m_gradients[n] = delta * sigmoidDerivative(m_outputs[n]);
 	}	
 }
 
+/*
 vector<double> Layer::backPropagate(vector<double> input, Layer &prevLayer)
 {
 	// (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
@@ -164,3 +175,4 @@ vector<double> Layer::backPropagate(vector<double> input, Layer &prevLayer)
 
 	return output;
 }
+*/
