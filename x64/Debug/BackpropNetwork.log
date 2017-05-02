@@ -1,8 +1,4 @@
-﻿  Network.cpp
-  Generating Code...
-cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
-  Compiling...
-  Main.cpp
-  Generating Code...
+﻿  Main.cpp
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\network.h(28): warning C4244: 'initializing': conversion from 'double' to 'const unsigned int', possible loss of data
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.exe
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.pdb (Full PDB)

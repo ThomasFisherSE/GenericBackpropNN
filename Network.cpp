@@ -136,6 +136,9 @@ void Network::test(vector<vector<double>> data, vector<double> labels) {
 void Network::train(vector<vector<double>> data, vector<double> labels) {
 	unsigned numberCorrect = 0;
 	unsigned count = 0;
+	double previousError = 999;
+	double changeInError = 999;
+	unsigned validationChecks = 0;
 
 	/* 1: Initialize all weights (w_ij)^l at random */
 	initialiseWeights();
@@ -144,7 +147,8 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 	unsigned epoch = 0;
 	//while (m_recognitionRate < TARGET_RECOGNITION) {
 	//while (m_recentAverageError > TARGET_ERROR) {
-	while (epoch < MAX_EPOCHS) {
+	while (validationChecks < MAX_VALIDATION_CHECKS) {
+	//while (epoch < MAX_EPOCHS) {
 		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
 		// i.e. pick a random sample
 		unsigned n = rand() % data.size(); // Generate a random number between 0 and the size of the data
@@ -161,7 +165,24 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
 		updateWeights();
 
+		changeInError = m_recentAverageError - previousError;
+
+		if (changeInError < 0) {
+			changeInError *= -1;
+		}
+
 		count++;
+
+		// Increment validation checks
+		if (changeInError < 0.001) {
+			validationChecks++;
+		}
+		else {
+			validationChecks = 0;
+		}
+
+		// Set next previous error
+		previousError = m_recentAverageError;
 
 		// Print pass details
 		if (count % PRINT_RATE == 0) {
@@ -172,12 +193,14 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 			//m_recognitionRate = ((double) numberCorrect / data.size()) * 100.0;
 			//cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
 			epoch = (unsigned)(count / labels.size());
-			cout << "Epoch: " << epoch << " | Completed training steps: " << count << " | Recent Average Error: " << m_recentAverageError << endl;
+			cout << "Epoch: " << epoch << " | Completed training steps: " << count <<
+				" | Recent Average Error: " << m_recentAverageError <<
+				" | Validation Checks: " << validationChecks << endl;
 		}
 
 		/* 7:	Iterate to the next step until it is time to stop */
 	}
-	/* 8 : Return the final weights (w_ij)^l */#
+	/* 8 : Return the final weights (w_ij)^l */
 	cout << endl;
 }
 
