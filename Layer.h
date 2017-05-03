@@ -17,13 +17,11 @@ public:
 	double calculateError(double expected);
 	void updateWeights(Layer &prevLayer);
 	size_t size() { return m_outputs.size(); }
-	double getWeight(unsigned i, unsigned j) { return m_weights.at(i, j); }
-	void setWeight(unsigned i, unsigned j, double newWeight) { m_weights.at(i, j) = newWeight; }
-	double getWeightChange(unsigned i, unsigned j) { return m_weightChanges.at(i, j); }
-	void setWeightChange(unsigned i, unsigned j, double newWeightChange) { m_weightChanges.at(i, j) = newWeightChange; }
-	//double getDelta(unsigned i) { return m_delta[i]; }
+	double getWeight(unsigned row, unsigned col) { return m_weights.at(row, col); }
+	void setWeight(unsigned row, unsigned col, double newWeight) { m_weights.at(row, col) = newWeight; }
+	double getWeightChange(unsigned row, unsigned col) { return m_weightChanges.at(row, col); }
+	void setWeightChange(unsigned row, unsigned col, double newWeightChange) { m_weightChanges.at(row, col) = newWeightChange; }
 	double getGradient(unsigned i) { return m_gradients[i]; }
-	//void setDelta(unsigned i, double delta) { m_delta[i] = delta; }
 	unsigned getOutputSize() { return m_outputSize; }
 	double getOutput(unsigned i) { return m_outputs[i]; }
 	vector<double> getOutputs() { return m_outputs; }
@@ -41,7 +39,6 @@ public:
 private:
 	vector<double> m_outputs; // Neuron values
 	vector<double> m_rawOutputs; // Before thresholding
-	//vector<double> m_delta;
 	
 	vector<double> m_gradients;
 	unsigned m_inputSize, m_outputSize;

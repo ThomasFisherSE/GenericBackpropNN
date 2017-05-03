@@ -145,10 +145,9 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 	/* 2 : for t = 0, 1, 2, . . . do */
 	unsigned epoch = 0;
-	//while (m_recognitionRate < TARGET_RECOGNITION) {
-	//while (m_recentAverageError > TARGET_ERROR) {
-	while (validationChecks < MAX_VALIDATION_CHECKS) {
-	//while (epoch < MAX_EPOCHS) {
+
+	while (validationChecks < MAX_VALIDATION_CHECKS
+		&& (epoch < MAX_EPOCHS)) {
 		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
 		// i.e. pick a random sample
 		unsigned n = rand() % data.size(); // Generate a random number between 0 and the size of the data
@@ -174,7 +173,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		count++;
 
 		// Increment validation checks
-		if (changeInError < 0.001) {
+		if (changeInError < MIN_CHANGE) {
 			validationChecks++;
 		}
 		else {
@@ -185,7 +184,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		previousError = m_recentAverageError;
 
 		// Print pass details
-		if (count % PRINT_RATE == 0) {
+		if (count % PRINT_RATE == 0 || validationChecks > 4) {
 			if (true) { 
 				double output = m_layers.back().getOutput(0);
 				cout << "Expected: " << labels[n] << " | Obtained: " << output << endl;
@@ -195,7 +194,8 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 			epoch = (unsigned)(count / labels.size());
 			cout << "Epoch: " << epoch << " | Completed training steps: " << count <<
 				" | Recent Average Error: " << m_recentAverageError <<
-				" | Validation Checks: " << validationChecks << endl;
+				" | Validation Checks: " << validationChecks <<
+				" | Change in Error: " << changeInError << endl;
 		}
 
 		/* 7:	Iterate to the next step until it is time to stop */
@@ -206,11 +206,12 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 void Network::createUniform(unsigned depth, unsigned inputSize, unsigned nbOfFeatures)
 {
-	//m_layers.resize(depth); // e.g. for depth of 3, size = 2, m_layers = [L,L,L]
+	// Create input layer
+	m_layers.push_back(Layer(inputSize, inputSize));
 
-	//From input layer to final hidden layer
-	for (unsigned l = 0; l < depth-1; l++) {
-		//Create hidden layers with input and output of the same size (For MNIST, 28*28 in,28*28 out)
+	//Create hidden layers
+	for (unsigned l = 0; l < depth-2; l++) {
+		//Create hidden layers with same size input and output
 		m_layers.push_back(Layer(inputSize, inputSize));
 	}
 

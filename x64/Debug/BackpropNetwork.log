@@ -1,4 +1,6 @@
-﻿  Main.cpp
-c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\network.h(28): warning C4244: 'initializing': conversion from 'double' to 'const unsigned int', possible loss of data
+﻿  Network.cpp
+c:\users\thomas fisher\dropbox\project\backpropnetwork\backpropnetwork\network.cpp(150): warning C4018: '<': signed/unsigned mismatch
+  Main.cpp
+  Generating Code...
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.exe
   BackpropNetwork.vcxproj -> C:\Users\Thomas Fisher\Dropbox\Project\BackpropNetwork\x64\Debug\BackpropNetwork.pdb (Full PDB)

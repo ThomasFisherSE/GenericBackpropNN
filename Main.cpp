@@ -115,7 +115,8 @@ void characterRecognition() {
 	cout << DIVIDER << endl;
 
 	cout << "Creating network..." << endl;
-	Network net(3, MNistReader::TOTAL_PIXELS, 1); // 3 Layers, 512 Input Nodes, 1 Output Node
+	int depth = 3;
+	Network net(depth, MNistReader::TOTAL_PIXELS, 1);
 	cout << "Created successfully." << endl;
 
 	cout << DIVIDER << endl;
@@ -138,8 +139,8 @@ int main(int argc, char *argv[])
 {
 	cout << DIVIDER << endl << "MNIST Character Recognition Neural Network" << endl << DIVIDER << endl;
 
-	//nandGates();
-	characterRecognition();
+	nandGates();
+	//characterRecognition();
 
 	string in;
 	cin >> in;

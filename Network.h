@@ -20,12 +20,12 @@ private:
 	void backPropagate(double expected);
 	void updateWeights();
 public:
-	const double TARGET_ERROR = 0.5;
+	const double TARGET_ERROR = 0;
 	const double TARGET_RECOGNITION = 10; // Target percentage recognition rate
-	const int PRINT_RATE = 100; // Print recognition rate every PRINT_RATE samples
-	const unsigned MAX_EPOCHS = 500;
-	const unsigned MAX_VALIDATION_CHECKS = 6;
-	const unsigned MIN_CHANGE = 0.1;
+	const int PRINT_RATE = 10000; // Print recognition rate every PRINT_RATE samples
+	const int MAX_EPOCHS = 500;
+	const int MAX_VALIDATION_CHECKS = 6;
+	const double MIN_CHANGE = 0.0001;
 
 	Network();
 	Network(unsigned depth, unsigned inputSize, unsigned nbOfFeatures);
