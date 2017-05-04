@@ -1,6 +1,26 @@
+/**
+ * @file	Network.h.
+ *
+ * @brief	Declares the structure of a network.
+ */
+
 #include "Neuron.h"
 #include "Layer.h"
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+/**
+ * @class	Network
+ *
+ * @brief	A generic neural network, that may be trained with any data
+ * 			that can be stored in a vector of doubles.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ */
+
 class Network
 {
 private:
@@ -22,8 +42,8 @@ private:
 public:
 	const double TARGET_ERROR = 0;
 	const double TARGET_RECOGNITION = 10; // Target percentage recognition rate
-	const int PRINT_RATE = 10000; // Print recognition rate every PRINT_RATE samples
-	const int MAX_EPOCHS = 500;
+	const int PRINT_RATE = 100; // Print recognition rate every PRINT_RATE samples
+	const int MAX_EPOCHS = 100;
 	const int MAX_VALIDATION_CHECKS = 6;
 	const double MIN_CHANGE = 0.0001;
 
@@ -42,5 +62,7 @@ public:
 	void getResults(vector<double> &resultVals);
 
 	double hardThreshold(double x);
+
+	void save();
 };
 

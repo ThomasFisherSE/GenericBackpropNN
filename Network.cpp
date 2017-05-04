@@ -1,4 +1,13 @@
-﻿#include "Network.h"
+﻿/**
+ * @file	Network.cpp.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ * 
+ * @brief	Implements a generic neural network.
+ */
+
+#include "Network.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,10 +16,22 @@
 
 using namespace std;
 
+/**
+ * @brief	Default constructor.
+ */
+
 Network::Network()
 {
 	
 }
+
+/**
+ * @brief	Constructor to create a uniform network.
+ * 			
+ * @param	depth			The number of layers in the network.
+ * @param	inputSize   	Number of neurons in the input layer.
+ * @param	nbOfFeatures	The number of neurons in the output layer.
+ */
 
 Network::Network(unsigned depth, unsigned inputSize, unsigned nbOfFeatures)
 {
@@ -23,9 +44,17 @@ Network::Network(unsigned depth, unsigned inputSize, unsigned nbOfFeatures)
 	createUniform(depth, inputSize, nbOfFeatures);
 }
 
+/**
+ * @brief	Destructor.
+ */
+
 Network::~Network()
 {
 }
+
+/**
+ * @brief	Initialises the weights of the network.
+ */
 
 void Network::initialiseWeights()
 {
@@ -35,6 +64,12 @@ void Network::initialiseWeights()
 		m_layers[i].initialiseWeights();
 	}
 }
+
+/**
+ * @brief	Feed-forward a sample through the network
+ *
+ * @param	sample	The sample to be fed through the network.
+ */
 
 void Network::feedForward(vector<double> sample)
 {
@@ -49,6 +84,12 @@ void Network::feedForward(vector<double> sample)
 		m_layers[l].feedForward(prevLayer);
 	}
 }
+
+/**
+ * @brief	Back propagate errors through the network.
+ * 			
+ * @param	target	The expected output of the network.
+ */
 
 void Network::backPropagate(double target)
 {
@@ -69,19 +110,11 @@ void Network::backPropagate(double target)
 
 		hiddenLayer.backPropagate(nextLayer);
 	}
-
-	/*
-	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
-	Layer finalLayer = m_layers[m_layers.size() - 1];
-	finalLayer.calcFinalDelta(target, m_layers[m_layers.size() - 2]);
-
-	// For previous layers: (δ_i)^(l-1) = (1 - (((x_i)^(l-1))^2)(sum of{((w_ij)^l)((δ_j)^l)}
-	for (unsigned l = m_layers.size() - 2; l >= 0; l--) {
-		if (m_testing) { cout << "for layer: " << l << endl; }
-		m_layers[l].backPropagate(sample, m_layers[l]);
-	}
-	*/
 }
+
+/**
+ * @brief	Updates the weights within the network.
+ */
 
 void Network::updateWeights() {
 	if (m_testing) { cout << "Updating weights..." << endl; }
@@ -92,6 +125,12 @@ void Network::updateWeights() {
 	}
 }
 
+/**
+ * @brief	Gets the output of the network and put into a vector
+ * 			
+ * @param [in,out]	resultVals	Vector to hold result values in
+ */
+
 void Network::getResults(vector<double> &resultVals) {
 	resultVals.clear();
 
@@ -99,6 +138,13 @@ void Network::getResults(vector<double> &resultVals) {
 		resultVals.push_back(m_layers.back().getOutput(i));
 	}
 }
+
+/**
+ * @brief	Test the network with some test data.
+ *
+ * @param	data  	The data to test the network with.
+ * @param	labels	The labels assosciated with the test data.
+ */
 
 void Network::test(vector<vector<double>> data, vector<double> labels) {
 	unsigned numberCorrect = 0;
@@ -130,8 +176,15 @@ void Network::test(vector<vector<double>> data, vector<double> labels) {
 	cout << endl;
 
 	m_accuracy = ((double)numberCorrect / data.size() * 100.0);
-	cout << "Accuracy: " << m_accuracy << endl;
+cout << "Accuracy: " << m_accuracy << endl;
 }
+
+/**
+ * @brief	Train the network with some training data.
+ *
+ * @param	data  	The data to train the network with.
+ * @param	labels	The labels assosciated with the training data.
+ */
 
 void Network::train(vector<vector<double>> data, vector<double> labels) {
 	unsigned numberCorrect = 0;
@@ -139,6 +192,8 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 	double previousError = 999;
 	double changeInError = 999;
 	unsigned validationChecks = 0;
+
+	ofstream out("errortracking.log");
 
 	/* 1: Initialize all weights (w_ij)^l at random */
 	initialiseWeights();
@@ -154,7 +209,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		vector<double> sample = data[n]; // Select the sample at this random index
 		double target = labels[n];
-		
+
 		/* 4 :	Forward : Compute all (x_j)^l */
 		feedForward(sample);
 
@@ -185,7 +240,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		// Print pass details
 		if (count % PRINT_RATE == 0 || validationChecks > 4) {
-			if (true) { 
+			if (true) {
 				double output = m_layers.back().getOutput(0);
 				cout << "Expected: " << labels[n] << " | Obtained: " << output << endl;
 			}
@@ -198,11 +253,23 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 				" | Change in Error: " << changeInError << endl;
 		}
 
+		out << m_recentAverageError << endl;
+
 		/* 7:	Iterate to the next step until it is time to stop */
 	}
 	/* 8 : Return the final weights (w_ij)^l */
 	cout << endl;
+
+	out.close();
 }
+
+/**
+ * @brief	Creates a uniform network.
+ *
+ * @param	depth			The number of layers in the network.
+ * @param	inputSize   	Number of neurons in the input layer.
+ * @param	nbOfFeatures	The number of neurons in the output layer.
+ */
 
 void Network::createUniform(unsigned depth, unsigned inputSize, unsigned nbOfFeatures)
 {
@@ -210,7 +277,7 @@ void Network::createUniform(unsigned depth, unsigned inputSize, unsigned nbOfFea
 	m_layers.push_back(Layer(inputSize, inputSize));
 
 	//Create hidden layers
-	for (unsigned l = 0; l < depth-2; l++) {
+	for (unsigned l = 0; l < depth - 2; l++) {
 		//Create hidden layers with same size input and output
 		m_layers.push_back(Layer(inputSize, inputSize));
 	}
@@ -219,6 +286,14 @@ void Network::createUniform(unsigned depth, unsigned inputSize, unsigned nbOfFea
 	m_layers.push_back(Layer(inputSize, nbOfFeatures));
 }
 
+/**
+ * @brief	Hard threshold a value x.
+ *
+ * @param	x	The value to threshold.
+ *
+ * @return	A double, either 0.0 or 1.0.
+ */
+
 double Network::hardThreshold(double x) {
 	if (x >= 0.5) {
 		return 1;
@@ -226,4 +301,23 @@ double Network::hardThreshold(double x) {
 	else {
 		return 0;
 	}
+}
+
+/**
+ * @brief	Saves the weights of the network to file.
+ */
+
+void Network::save() {
+	ofstream out("net.network");
+	for (int l = 0; l < m_layers.size() - 1; l++) {
+		out << "OMEGA" << l + 1 << endl;
+
+		for (int i = 0; i < m_layers.at(l).getOutputSize(); i++) {
+			for (int j = 0; j < m_layers.at(l + 1).getOutputSize(); j++) {
+				out << std::fixed << std::setprecision(5) << m_layers.at(l).getWeight(i,j) << endl;
+			}
+		}
+	}
+
+	out.close();
 }

@@ -1,8 +1,23 @@
+/**
+ * @file	MNistReader.h.
+ *
+ * @brief	Declares the structure of a reader for the MNIST dataset
+ */
+
 #include <iostream>
 #include <fstream>
 #include <vector>
 
 using namespace std;
+
+/**
+ * @class	MNistReader
+ *
+ * @brief	A reader for the MNIST dataset.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ */
 
 class MNistReader
 {

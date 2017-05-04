@@ -1,3 +1,10 @@
+/**
+ * @file	MNistReader.cpp.
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ * @brief	Implements a reader for the MNIST dataset
+ */
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -6,15 +13,31 @@
 
 using namespace std;
 
+/**
+ * @brief	Default constructor.
+ */
+
 MNistReader::MNistReader()
 {
 
 }
 
+/**
+ * @brief	Destructor.
+ */
+
 MNistReader::~MNistReader()
 {
 
 }
+
+/**
+ * @brief	Reverse int.
+ * 			
+ * @param	i	int value to be reversed.
+ *
+ * @return	Reversed int
+ */
 
 int MNistReader::reverseInt(int i)
 {
@@ -26,7 +49,14 @@ int MNistReader::reverseInt(int i)
 	return((int)ch1 << 24) + ((int)ch2 << 16) + ((int)ch3 << 8) + ch4;
 }
 
-// Copied
+/**
+ * @brief	Reads labels from the MNIST dataset.
+ *
+ * @param 		  	numberOfSamples	Number of samples.
+ * @param [in,out]	vec			   	The vector to put labels into.
+ * @param 		  	filename	   	Filename of the labels file.
+ */
+
 void MNistReader::readLabels(int numberOfSamples, vector<double> &vec, string filename)
 {
 	// Resize the vector that the data will be loaded into
@@ -39,8 +69,6 @@ void MNistReader::readLabels(int numberOfSamples, vector<double> &vec, string fi
 	{
 		int magicNumber = 0;
 		int numberOfImages = 0;
-		int n_rows = 0;
-		int n_cols = 0;
 		file.read((char*)&magicNumber, sizeof(magicNumber));
 		magicNumber = reverseInt(magicNumber);
 		file.read((char*)&numberOfImages, sizeof(numberOfImages));
@@ -55,6 +83,15 @@ void MNistReader::readLabels(int numberOfSamples, vector<double> &vec, string fi
 	}
 }
 
+/**
+ * @brief	Reads images from the MNIST dataset.
+ *
+ * @param 		  	numberOfSamples	Number of samples.
+ * @param 		  	dataOfAnImage  	The amount of data in an image (i.e. 784 for MNIST images)
+ * @param [in,out]	vec			   	The vector to put images into.
+ * @param 		  	filepath	   	The filepath of the images file.
+ */
+
 void MNistReader::readImages(int numberOfSamples, int dataOfAnImage, vector<vector<double>> &vec, string filepath)
 {
 	//Counter to keep track of successful writes to array
@@ -67,27 +104,27 @@ void MNistReader::readImages(int numberOfSamples, int dataOfAnImage, vector<vect
 	ifstream file(filepath, ios::binary);
 	if (file.is_open())
 	{
-		int magic_number = 0;
-		int number_of_images = 0;
-		int n_rows = 0;
-		int n_cols = 0;
-		file.read((char*)&magic_number, sizeof(magic_number));
-		magic_number = reverseInt(magic_number);
-		file.read((char*)&number_of_images, sizeof(number_of_images));
-		number_of_images = reverseInt(number_of_images);
-		file.read((char*)&n_rows, sizeof(n_rows));
-		n_rows = reverseInt(n_rows);
-		file.read((char*)&n_cols, sizeof(n_cols));
-		n_cols = reverseInt(n_cols);
-		for (int i = 0; i<number_of_images; ++i)
+		int magicNumber = 0;
+		int numberOfImages = 0;
+		int rows = 0;
+		int cols = 0;
+		file.read((char*)&magicNumber, sizeof(magicNumber));
+		magicNumber = reverseInt(magicNumber);
+		file.read((char*)&numberOfImages, sizeof(numberOfImages));
+		numberOfImages = reverseInt(numberOfImages);
+		file.read((char*)&rows, sizeof(rows));
+		rows = reverseInt(rows);
+		file.read((char*)&cols, sizeof(cols));
+		cols = reverseInt(cols);
+		for (int i = 0; i<numberOfImages; ++i)
 		{
-			for (int r = 0; r<n_rows; ++r)
+			for (int r = 0; r<rows; ++r)
 			{
-				for (int c = 0; c<n_cols; ++c)
+				for (int c = 0; c<cols; ++c)
 				{
 					unsigned char temp = 0;
 					file.read((char*)&temp, sizeof(temp));
-					vec[i][(n_rows*r) + c] = (double)temp;
+					vec[i][(rows*r) + c] = (double)temp;
 				}
 			}
 

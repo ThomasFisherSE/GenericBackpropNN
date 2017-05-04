@@ -1,78 +1,139 @@
+/**
+ * @file	Main.cpp.
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ * @brief	Implements the main class. The entry-point of the application.
+ */
+
 #include "MNistReader.h"
 #include "Network.h"
 #include <iostream>
 
 const string DIVIDER = "*************************************************";
 
+/**
+ * @brief	Assign NAND labels.
+ *
+ * @param			data  	The vector of data.
+ * @param [in,out]	labels	The vector to put labels into.
+ */
+
+void assignNandLabels(vector<vector<double>> data, vector<double> &labels) {
+	for (int i = 0; i < data.size(); i++) {
+		if ((data[i][0] == 0) && data[i][1] == 0) {
+			labels[i] = 1;
+		}
+
+		if ((data[i][0] == 0) && data[i][1] == 1) {
+			labels[i] = 1;
+		}
+
+		if ((data[i][0] == 1) && data[i][1] == 0) {
+			labels[i] = 1;
+		}
+
+		if ((data[i][0] == 1) && data[i][1] == 1) {
+			labels[i] = 0;
+		}
+	}
+}
+
+/**
+ * @brief	Generates NAND data.
+ * 			
+ * @param [in,out]	trnData  	Vector to put training data into.
+ * @param [in,out]	trnLabels	Vector to put training labels into.
+ * @param [in,out]	tstData  	Vector to put testing data into.
+ * @param [in,out]	tstLabels	Vector to put testing labels into.
+ */
+
+void generateNandData(
+	vector<vector<double>> &trnData, vector<double> &trnLabels, 
+	vector<vector<double>> &tstData, vector<double> &tstLabels) {
+
+	// Training Data:
+	for (int i = 0; i < 1000; i++) {
+		trnData[i].resize(2);
+	}
+
+	for (int j = 0; j < 200; j++) {
+		trnData[j][0] = 0;
+		trnData[j][1] = 0;
+
+		int k = j + 200;
+
+		trnData[k][0] = 0;
+		trnData[k][1] = 1;
+
+		int l = k + 200;
+
+		trnData[l][0] = 1;
+		trnData[l][1] = 0;
+
+		int m = l + 200;
+
+		trnData[m][0] = 1;
+		trnData[m][1] = 1;
+	}
+
+	random_shuffle(trnData.begin(), trnData.end());
+
+	// Assign Labels
+	assignNandLabels(trnData, trnLabels);
+
+	// Test Data:
+	for (int i = 0; i < 1000; i++) {
+		tstData[i].resize(2);
+	}
+
+	for (int j = 0; j < 200; j++) {
+		tstData[j][0] = 1;
+		tstData[j][1] = 1;
+
+		int k = j + 200;
+
+		tstData[k][0] = 0;
+		tstData[k][1] = 0;
+
+		int l = k + 200;
+
+		tstData[l][0] = 0;
+		tstData[l][1] = 1;
+
+		int m = l + 200;
+
+		tstData[m][0] = 1;
+		tstData[m][1] = 0;
+	}
+
+	random_shuffle(tstData.begin(), tstData.end());
+
+	// Assign Labels
+	assignNandLabels(tstData, tstLabels);
+}
+
+/**
+ * @brief	Create and use a neural network for the purpose of learning NAND gates.
+ */
+
 void nandGates() {
 	vector<vector<double>> nandData(1000);
 	vector<double> nandLabels(1000);
-
-	for (int i = 0; i < 1000; i++) {
-		nandData[i].resize(2);
-	}
-
-	for (int j = 0; j < 200; j++) {
-		nandData[j][0] = 0;
-		nandData[j][1] = 0;
-		nandLabels[j] = 1;
-
-		int k = j + 200;
-
-		nandData[k][0] = 0;
-		nandData[k][1] = 1;
-		nandLabels[k] = 1;
-
-		int l = k + 200;
-
-		nandData[l][0] = 1;
-		nandData[l][1] = 0;
-		nandLabels[l] = 1;
-
-		int m = l + 200;
-
-		nandData[m][0] = 1;
-		nandData[m][1] = 1;
-		nandLabels[m] = 0;
-	}
-
-
 	vector<vector<double>> nandTestData(1000);
 	vector<double> nandTestLabels(1000);
 
-	for (int i = 0; i < 1000; i++) {
-		nandTestData[i].resize(2);
-	}
-
-	for (int j = 0; j < 200; j++) {
-		nandTestData[j][0] = 1;
-		nandTestData[j][1] = 1;
-		nandTestLabels[j] = 0;
-
-		int k = j + 200;
-
-		nandTestData[k][0] = 0;
-		nandTestData[k][1] = 0;
-		nandTestLabels[k] = 1;
-
-		int l = k + 200;
-
-		nandTestData[l][0] = 0;
-		nandTestData[l][1] = 1;
-		nandTestLabels[l] = 1;
-
-		int m = l + 200;
-
-		nandTestData[m][0] = 1;
-		nandTestData[m][1] = 0;
-		nandTestLabels[m] = 1;
-	}
+	generateNandData(nandData, nandLabels, nandTestData, nandTestLabels);
 
 	Network net(3, 2, 1);
 
 	net.train(nandData, nandLabels);
 	net.test(nandTestData, nandTestLabels);
+	net.save();
 }
+
+/**
+ * @brief	Create and use a neural network for the purpose of character recognition.
+ */
 
 void characterRecognition() {
 	vector<vector<double>> testingImages;
@@ -134,6 +195,15 @@ void characterRecognition() {
 
 	net.test(testingImages, testLabels);
 }
+
+/**
+ * @brief	Main entry-point for this application.
+ * 			
+ * @param	argc	The number of command-line arguments provided.
+ * @param	argv	An array of command-line argument strings.
+ *
+ * @return	Exit-code for the process - 0 for success, else an error code.
+ */
 
 int main(int argc, char *argv[])
 {

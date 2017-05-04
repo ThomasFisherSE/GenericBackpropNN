@@ -1,9 +1,26 @@
+/**
+ * @file	Layer.h.
+ *
+ * @brief	Declares the structure for a layer
+ */
+
 #include "Neuron.h"
 #include <vector>
 #include <armadillo>
 
 using namespace std;
+
 using namespace arma;
+
+/**
+ * @class	Layer
+ *
+ * @brief	A layer of a neural network. 
+ * 			Consists of neurons and weights (connections with other layers).
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ */
 
 class Layer
 {

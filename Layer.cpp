@@ -1,9 +1,30 @@
-﻿#include "Layer.h"
+﻿/**
+ * @file	Layer.cpp.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ * 			
+ * @brief	Implements a generic layer for a neural network, consisting of neurons and weights.
+ */
+
+#include "Layer.h"
 #include <math.h>
 #include <assert.h>
 #include <iostream>
 
 using namespace std;
+
+/**
+ * @fn	Layer::Layer(unsigned inputSize, unsigned outputSize)
+ *
+ * @brief	Constructor.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ *
+ * @param	inputSize 	Size of the input.
+ * @param	outputSize	Size of the output.
+ */
 
 Layer::Layer(unsigned inputSize, unsigned outputSize)
 {
@@ -21,15 +42,41 @@ Layer::Layer(unsigned inputSize, unsigned outputSize)
 	}
 }
 
+/**
+ * @fn	Layer::Layer()
+ *
+ * @brief	Default constructor.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ */
+
 Layer::Layer()
 {
 }
 
+/**
+ * @fn	Layer::~Layer()
+ *
+ * @brief	Destructor.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ */
 
 Layer::~Layer()
 {
 
 }
+
+/**
+ * @fn	void Layer::initialiseWeights()
+ *
+ * @brief	Initialises the weights.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ */
 
 void Layer::initialiseWeights()
 {
@@ -37,6 +84,17 @@ void Layer::initialiseWeights()
 	m_weights.randn(m_inputSize, m_outputSize);
 	m_weightChanges.zeros(m_inputSize, m_outputSize);
 }
+
+/**
+ * @fn	void Layer::updateWeights(Layer &prevLayer)
+ *
+ * @brief	Updates the weights described by prevLayer.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ *
+ * @param [in,out]	prevLayer	The previous layer.
+ */
 
 void Layer::updateWeights(Layer &prevLayer)
 {
@@ -59,6 +117,19 @@ void Layer::updateWeights(Layer &prevLayer)
 		}
 	}
 }
+
+/**
+ * @fn	vector<double> Layer::feedForward(Layer &prevLayer)
+ *
+ * @brief	Feed forward.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ *
+ * @param [in,out]	prevLayer	The previous layer.
+ *
+ * @return	A vector&lt;double&gt;
+ */
 
 vector<double> Layer::feedForward(Layer &prevLayer) {
 	// (x_j)^l = θ(sum of{(w_ij)^l * ((x_i)^(l-1))})
@@ -85,6 +156,19 @@ vector<double> Layer::feedForward(Layer &prevLayer) {
 	return m_outputs;
 }
 
+/**
+ * @fn	double Layer::calculateError(double target)
+ *
+ * @brief	Calculates the error.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ *
+ * @param	target	Target for the.
+ *
+ * @return	The calculated error.
+ */
+
 double Layer::calculateError(double target)
 {
 	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
@@ -100,6 +184,19 @@ double Layer::calculateError(double target)
 
 	return error;
 }
+
+/**
+ * @fn	double Layer::sumDerivativeOfWeights(Layer &nextLayer)
+ *
+ * @brief	Sum derivative of weights.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ *
+ * @param [in,out]	nextLayer	The next layer.
+ *
+ * @return	The total number of derivative of weights.
+ */
 
 double Layer::sumDerivativeOfWeights(Layer &nextLayer) {
 	double sum = 0.0;
@@ -117,6 +214,17 @@ double Layer::sumDerivativeOfWeights(Layer &nextLayer) {
 	return sum;
 }
 
+/**
+ * @fn	void Layer::backPropagate(Layer &nextLayer)
+ *
+ * @brief	Back propagate.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ *
+ * @param [in,out]	nextLayer	The next layer.
+ */
+
 void Layer::backPropagate(Layer &nextLayer) {
 	double dow = sumDerivativeOfWeights(nextLayer);
 
@@ -124,6 +232,17 @@ void Layer::backPropagate(Layer &nextLayer) {
 		m_gradients[n] = dow * sigmoidDerivative(m_outputs[n]);
 	}
 }
+
+/**
+ * @fn	void Layer::calcFinalDelta(double target)
+ *
+ * @brief	Calculates the final delta.
+ *
+ * @author	Thomas Fisher
+ * @date	04/05/2017
+ *
+ * @param	target	Target for the.
+ */
 
 void Layer::calcFinalDelta(double target) {
 	for (unsigned n = 0; n < m_outputSize; n++) {
