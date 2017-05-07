@@ -25,7 +25,7 @@ public:
 	MNistReader();
 	~MNistReader();
 	void readImages(int numberOfSamples, int dataOfAnImage, vector<vector<double>> &vec, string filepath);
-	void readLabels(int numberOfSamples, vector<double> &vec, string filename);
+	void readLabels(int numberOfSamples, vector<double> &vec, string filepath);
 
 	static const int IMAGE_SIZE_PX = 28;
 	static const int TOTAL_PIXELS = IMAGE_SIZE_PX * IMAGE_SIZE_PX;

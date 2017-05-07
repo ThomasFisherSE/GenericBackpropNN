@@ -15,12 +15,7 @@
 using namespace std;
 
 /**
- * @fn	Layer::Layer(unsigned inputSize, unsigned outputSize)
- *
- * @brief	Constructor.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
+ * @brief Typical constructor for a layer.
  *
  * @param	inputSize 	Size of the input.
  * @param	outputSize	Size of the output.
@@ -43,12 +38,7 @@ Layer::Layer(unsigned inputSize, unsigned outputSize)
 }
 
 /**
- * @fn	Layer::Layer()
- *
  * @brief	Default constructor.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
  */
 
 Layer::Layer()
@@ -56,12 +46,7 @@ Layer::Layer()
 }
 
 /**
- * @fn	Layer::~Layer()
- *
  * @brief	Destructor.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
  */
 
 Layer::~Layer()
@@ -70,12 +55,7 @@ Layer::~Layer()
 }
 
 /**
- * @fn	void Layer::initialiseWeights()
- *
  * @brief	Initialises the weights.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
  */
 
 void Layer::initialiseWeights()
@@ -86,12 +66,7 @@ void Layer::initialiseWeights()
 }
 
 /**
- * @fn	void Layer::updateWeights(Layer &prevLayer)
- *
  * @brief	Updates the weights described by prevLayer.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
  *
  * @param [in,out]	prevLayer	The previous layer.
  */
@@ -105,34 +80,25 @@ void Layer::updateWeights(Layer &prevLayer)
 			double oldWeight = prevLayer.getWeight(i, j);
 			double oldWeightChange = prevLayer.getWeightChange(i, j);
 
-			double newWeightChange = ETA * prevLayer.getOutput(i) * m_gradients[j] + ALPHA * oldWeightChange;
-
-			//double newWeight = oldWeight - ETA * prevLayer.getOutput(i) * m_gradients[j];
-
+			double newWeightChange = m_eta * prevLayer.getOutput(i) * m_gradients[j] + ALPHA * oldWeightChange;
 			double newWeight = oldWeight + newWeightChange;
 
 			prevLayer.setWeightChange(i, j, newWeightChange);
-
 			prevLayer.setWeight(i, j, newWeight);
 		}
 	}
 }
 
 /**
- * @fn	vector<double> Layer::feedForward(Layer &prevLayer)
- *
- * @brief	Feed forward.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
+ * @brief	Feed forward outputs from the previous layer through the network.
  *
  * @param [in,out]	prevLayer	The previous layer.
  *
- * @return	A vector&lt;double&gt;
+ * @return	The outputs for the current layer after forward propagating.
  */
 
 vector<double> Layer::feedForward(Layer &prevLayer) {
-	// (x_j)^l = θ(sum of{(w_ij)^l * ((x_i)^(l-1))})
+	// (x_j)^l = thresholdOf(sum of{(w_ij)^l * ((x_i)^(l-1))})
 	//Next x = ThresholdOf(Sum of(Current weight * x from the previous layer))
 
 	// For each neuron in this layer
@@ -157,21 +123,17 @@ vector<double> Layer::feedForward(Layer &prevLayer) {
 }
 
 /**
- * @fn	double Layer::calculateError(double target)
+ * @brief	Calculates the error using the network's output
+ * 			and target value from the labels.
  *
- * @brief	Calculates the error.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
- *
- * @param	target	Target for the.
+ * @param	target	Target value from the labels.
  *
  * @return	The calculated error.
  */
 
 double Layer::calculateError(double target)
 {
-	// For final layer: (δ_1)^L = ∂e(w) / ∂(s_1)^L
+	// For final layer: (delta_1)^L = partialDerivative(e(w) / (s_1)^L)
 	double error = 0.0;
 
 	for (unsigned n = 0; n < m_outputSize; n++) {
@@ -186,16 +148,11 @@ double Layer::calculateError(double target)
 }
 
 /**
- * @fn	double Layer::sumDerivativeOfWeights(Layer &nextLayer)
- *
- * @brief	Sum derivative of weights.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
+ * @brief	Sums derivative of weights.
  *
  * @param [in,out]	nextLayer	The next layer.
  *
- * @return	The total number of derivative of weights.
+ * @return	The sum of the derivative of weights.
  */
 
 double Layer::sumDerivativeOfWeights(Layer &nextLayer) {
@@ -215,14 +172,9 @@ double Layer::sumDerivativeOfWeights(Layer &nextLayer) {
 }
 
 /**
- * @fn	void Layer::backPropagate(Layer &nextLayer)
+ * @brief	Back propagate errors through the network.
  *
- * @brief	Back propagate.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
- *
- * @param [in,out]	nextLayer	The next layer.
+ * @param [in,out]	nextLayer	The next layer in the network.
  */
 
 void Layer::backPropagate(Layer &nextLayer) {
@@ -234,17 +186,12 @@ void Layer::backPropagate(Layer &nextLayer) {
 }
 
 /**
- * @fn	void Layer::calcFinalDelta(double target)
- *
- * @brief	Calculates the final delta.
- *
- * @author	Thomas Fisher
- * @date	04/05/2017
- *
- * @param	target	Target for the.
+ * @brief	Calculates delta for the final layer.
+ * 			
+ * @param	target	Target output from the labels.
  */
 
-void Layer::calcFinalDelta(double target) {
+void Layer::calcOutputGradient(double target) {
 	for (unsigned n = 0; n < m_outputSize; n++) {
 		double delta = target - m_outputs[n];
 		m_gradients[n] = delta * sigmoidDerivative(m_outputs[n]);

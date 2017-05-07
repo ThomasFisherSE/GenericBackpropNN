@@ -53,6 +53,18 @@ Network::~Network()
 }
 
 /**
+ * @brief	Sets the learning rate for the network
+ * 			
+ * @param	eta, the new learning rate of the network.
+ */
+
+void Network::setEta(double eta) {
+	for (size_t l = 0; l < m_layers.size(); l++) {
+		m_layers[l].setEta(eta);
+	}
+}
+
+/**
  * @brief	Initialises the weights of the network.
  */
 
@@ -101,7 +113,7 @@ void Network::backPropagate(double target)
 	m_recentAverageError = (m_recentAverageError * m_recentAverageRate + m_error) / (m_recentAverageRate + 1.0);
 
 	// Calculate output gradient(s)
-	outputLayer.calcFinalDelta(target);
+	outputLayer.calcOutputGradient(target);
 
 	// Calculate hidden layer gradients
 	for (size_t l = m_layers.size() - 2; l > 0; l--) {
@@ -164,7 +176,7 @@ void Network::test(vector<vector<double>> data, vector<double> labels) {
 
 		output = hardThreshold(results[0]);
 
-		if (true) { cout << "\nTarget: " << target << " | Output: " << output << endl; }
+		if (m_testing) { cout << "\nTarget: " << target << " | Output: " << output << endl; }
 
 		if (output == target) {
 			numberCorrect++;
@@ -175,8 +187,8 @@ void Network::test(vector<vector<double>> data, vector<double> labels) {
 	
 	cout << endl;
 
-	m_accuracy = ((double)numberCorrect / data.size() * 100.0);
-cout << "Accuracy: " << m_accuracy << endl;
+	double accuracy = ((double)numberCorrect / data.size() * 100.0);
+	cout << "Accuracy: " << accuracy << endl;
 }
 
 /**
@@ -191,7 +203,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 	unsigned count = 0;
 	double previousError = 999;
 	double changeInError = 999;
-	unsigned validationChecks = 0;
+	int validationChecks = 0;
 
 	ofstream out("errortracking.log");
 
@@ -199,24 +211,24 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 	initialiseWeights();
 
 	/* 2 : for t = 0, 1, 2, . . . do */
-	unsigned epoch = 0;
+	int epoch = 0;
 
 	while (validationChecks < MAX_VALIDATION_CHECKS
-		&& (epoch < MAX_EPOCHS)) {
-		/* 3 : Pick n ∈{ 1, 2, · · · , N } */
+		&& (epoch < m_maxEpochs)) {
+		/* 3 : Pick n from { 1, 2, · · · , N } */
 		// i.e. pick a random sample
-		unsigned n = rand() % data.size(); // Generate a random number between 0 and the size of the data
+		unsigned n = rand() % data.size();
 
-		vector<double> sample = data[n]; // Select the sample at this random index
+		vector<double> sample = data[n];
 		double target = labels[n];
 
 		/* 4 :	Forward : Compute all (x_j)^l */
 		feedForward(sample);
 
-		/* 5 :	Backward : Compute all (δ_j)^l */
+		/* 5 :	Backward : Compute all (delta_j)^l */
 		backPropagate(target);
 
-		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - η ((x_i)^(l-1)) (δ_j)^l */
+		/* 6 :	Update the weights : (w_ij)^l ← (w_ij)^l - eta ((x_i)^(l-1)) (delta_j)^l */
 		updateWeights();
 
 		changeInError = m_recentAverageError - previousError;
@@ -228,7 +240,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 		count++;
 
 		// Increment validation checks
-		if (changeInError < MIN_CHANGE) {
+		if (changeInError < m_maxErrorChange) {
 			validationChecks++;
 		}
 		else {
@@ -240,12 +252,11 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		// Print pass details
 		if (count % PRINT_RATE == 0 || validationChecks > 4) {
-			if (true) {
+			if (m_testing) {
 				double output = m_layers.back().getOutput(0);
 				cout << "Expected: " << labels[n] << " | Obtained: " << output << endl;
 			}
-			//m_recognitionRate = ((double) numberCorrect / data.size()) * 100.0;
-			//cout << "Current Recognition Rate: " << m_recognitionRate << '\r';
+
 			epoch = (unsigned)(count / labels.size());
 			cout << "Epoch: " << epoch << " | Completed training steps: " << count <<
 				" | Recent Average Error: " << m_recentAverageError <<
@@ -257,7 +268,7 @@ void Network::train(vector<vector<double>> data, vector<double> labels) {
 
 		/* 7:	Iterate to the next step until it is time to stop */
 	}
-	/* 8 : Return the final weights (w_ij)^l */
+	/* 8 : Return the final weights (w_ij)^l */
 	cout << endl;
 
 	out.close();
@@ -309,15 +320,14 @@ double Network::hardThreshold(double x) {
 
 void Network::save() {
 	ofstream out("net.network");
-	for (int l = 0; l < m_layers.size() - 1; l++) {
+	for (size_t l = 0; l < m_layers.size() - 1; l++) {
 		out << "OMEGA" << l + 1 << endl;
 
-		for (int i = 0; i < m_layers.at(l).getOutputSize(); i++) {
-			for (int j = 0; j < m_layers.at(l + 1).getOutputSize(); j++) {
+		for (unsigned i = 0; i < m_layers.at(l).getOutputSize(); i++) {
+			for (unsigned j = 0; j < m_layers.at(l + 1).getOutputSize(); j++) {
 				out << std::fixed << std::setprecision(5) << m_layers.at(l).getWeight(i,j) << endl;
 			}
 		}
 	}
-
 	out.close();
 }

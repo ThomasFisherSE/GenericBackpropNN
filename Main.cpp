@@ -9,7 +9,9 @@
 #include "Network.h"
 #include <iostream>
 
-const string DIVIDER = "*************************************************";
+using namespace std;
+
+const string DIVIDER = "**********************************************************************************";
 
 /**
  * @brief	Assign NAND labels.
@@ -113,6 +115,160 @@ void generateNandData(
 }
 
 /**
+ * @brief	Normalize pixel data to be between 0 and 1.
+ *
+ * @param [in,out]	data	The data to be normalized.
+ */
+
+void normalizePixelData(vector<vector<double>> &data) {
+	for (int i = 0; i < data.size(); i++) {
+		for (int j = 0; j < data[0].size(); j++) {
+			data[i][j] /= 255;
+		}
+	}
+}
+
+/**
+ * @brief	Convert a string to an integer.
+ *
+ * @param	s	The string to be converted.
+ *
+ * @return The converted integer value.
+ */
+
+int stringToInt(string s) {
+	int intVal;
+	bool valid = false;
+
+	try {
+		intVal = stoi(s);
+	}
+	catch (...) {
+		cout << "Please enter a valid integer." << endl;
+		return -1;
+	}
+
+	return intVal;
+}
+
+/**
+ * @brief	Convert a string to double.
+ *
+ * @param	s	The string.
+ *
+ * @return	The converted double value.
+ */
+
+double stringToDouble(string s) {
+	double doubleVal;
+	bool valid = false;
+
+	try {
+		doubleVal = stod(s);
+	}
+	catch (...) {
+		cout << "Please enter a valid double." << endl;
+		return -1.0;
+	}
+
+	return doubleVal;
+}
+
+/**
+ * @brief	Choose options for the network.
+ * 			
+ * @param [in,out]	net	The net.
+ */
+
+void chooseOptions(Network &net) {
+	string input;
+	double doubleInput;
+	int intInput;
+	bool valid = false;
+
+	cout << DIVIDER << endl;
+	cout << "Choose the options for the network." << endl;
+
+	do {
+		cout << DIVIDER << endl;
+		cout << "Learning Rate (Between 0 and 1. Recommended = 0.1): ";
+		cin >> input;
+		doubleInput = stringToDouble(input);
+	
+		if (doubleInput > 0 && doubleInput < 1) {
+			valid = true;
+			net.setEta(doubleInput);
+		}
+		else {
+			cout << "Learning rate must be a double between 0 and 1." << endl;
+			valid = false;
+		}
+	} while (!valid);
+
+	do {
+		cout << "Change in error required for validation check (Recommended = 0.0001): ";
+		cin >> input;
+		doubleInput = stringToDouble(input);
+
+		if (doubleInput > 0) {
+			valid = true;
+			net.setMaxErrorChange(doubleInput);
+		}
+		else {
+			cout << "Max error change must be a double greater than 0." << endl;
+			cout << DIVIDER << endl;
+			valid = false;
+		}
+	} while (!valid);
+
+	do {
+		cout << "Max number of epochs: (Recommended = 100): ";
+		cin >> input;
+		intInput = stringToInt(input);
+
+		if (intInput > 0) {
+			valid = true;
+			net.setMaxEpochs(intInput);
+		}
+		else {
+			cout << "Max number of epochs must be an integer greater than 0." << endl;
+			cout << DIVIDER << endl;
+			valid = false;
+		}
+	} while (!valid);
+}
+
+/**
+ * @brief	Choose number of layers for a network.
+ *
+ * @return	An int, the number of layers.
+ */
+
+int chooseDepth() {
+	string input;
+	int intInput = 3;
+	bool valid = false;
+
+	do {
+		cout << DIVIDER << endl;
+		cout << "Depth of Network: ";
+		cin >> input;
+		intInput = stringToInt(input);
+
+		if (intInput > 1) {
+			valid = true;
+			return intInput;
+		}
+		else {
+			cout << "Depth must be an integer larger than 1." << endl;
+			valid = false;
+		}
+	} while (!valid);
+
+	return intInput;
+}
+
+/**
  * @brief	Create and use a neural network for the purpose of learning NAND gates.
  */
 
@@ -124,7 +280,9 @@ void nandGates() {
 
 	generateNandData(nandData, nandLabels, nandTestData, nandTestLabels);
 
-	Network net(3, 2, 1);
+	int depth = chooseDepth();
+	Network net(depth, 2, 1);
+	chooseOptions(net);
 
 	net.train(nandData, nandLabels);
 	net.test(nandTestData, nandTestLabels);
@@ -162,11 +320,14 @@ void characterRecognition() {
 	cout << "Reading test data..." << endl;
 	dataReader.readImages(MNistReader::TESTING_SIZE, MNistReader::TOTAL_PIXELS, testingImages, dataReader.TEST_IMAGES);
 
+	normalizePixelData(testingImages);
+
 	cout << DIVIDER << endl;
 
 	cout << "Reading test labels..." << endl;
 	dataReader.readLabels(MNistReader::TESTING_SIZE, testLabels, dataReader.TEST_LABELS);
 
+	// Change labels to only show whether a digit is a zero or not
 	for (int i = 0; i < testLabels.size(); i++) {
 		if (testLabels[i] != 0) {
 			testLabels[i] = 1;
@@ -176,9 +337,10 @@ void characterRecognition() {
 	cout << DIVIDER << endl;
 
 	cout << "Creating network..." << endl;
-	int depth = 3;
+	int depth = chooseDepth();
 	Network net(depth, MNistReader::TOTAL_PIXELS, 1);
 	cout << "Created successfully." << endl;
+	chooseOptions(net);
 
 	cout << DIVIDER << endl;
 	cout << "Training network..." << endl;
@@ -197,6 +359,84 @@ void characterRecognition() {
 }
 
 /**
+ * @brief	Program menu to determine which program to run.
+ */
+
+void programMenu() {
+	string input;
+	int intInput;
+	bool valid = false;
+
+	do {
+		cout << "Which function would you like to train the network to perform?" << endl;
+		cout << "1: NAND Gate" << endl;
+		cout << "2: Handwritten Digit Recognition" << endl;
+		cout << DIVIDER << endl;
+		cout << "Enter '1' or '2': ";
+
+		cin >> input;
+
+		intInput = stringToInt(input);
+
+		switch (intInput) {
+			case 1:
+				valid = true;
+				nandGates();
+				break;
+			case 2:
+				valid = true;
+				characterRecognition();
+				break;
+			default:
+				valid = false;
+		}
+
+		if (!valid) {
+			cout << "Please enter either '1' or '2'." << endl;
+		}
+
+		cout << DIVIDER << endl;
+	} while (!valid);
+}
+
+/**
+ * @brief	Determines if program can terminate.
+ *
+ * @return	True if user is finished. False if otherwise.
+ */
+
+bool checkDone() {
+	bool valid = false;
+	string input;
+	int intInput;
+
+	do {
+		cout << "1: Train and test a new network" << endl;
+		cout << "2: Exit Program" << endl;
+		cout << DIVIDER << endl;
+		cout << "Enter '1' or '2': ";
+		cin >> input;
+
+		intInput = stringToInt(input);
+
+		switch (intInput) {
+			case 1:
+				return false;
+			case 2:
+				return true;
+			default:
+				valid = false;
+		}
+
+		if (!valid) {
+			cout << "Please enter either '1' or '2'." << endl;
+		}
+	} while (!valid);
+
+	return true;
+}
+
+/**
  * @brief	Main entry-point for this application.
  * 			
  * @param	argc	The number of command-line arguments provided.
@@ -208,10 +448,12 @@ void characterRecognition() {
 int main(int argc, char *argv[])
 {
 	cout << DIVIDER << endl << "MNIST Character Recognition Neural Network" << endl << DIVIDER << endl;
+	bool done = false;
 
-	nandGates();
-	//characterRecognition();
-
-	string in;
-	cin >> in;
+	do {
+		programMenu();
+		cout << "Network training and testing was successful." << endl;
+		cout << DIVIDER << endl;
+		done = checkDone();
+	} while (!done);
 }
